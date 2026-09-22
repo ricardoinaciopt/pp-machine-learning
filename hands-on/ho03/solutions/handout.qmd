@@ -1,0 +1,191 @@
+---
+title: "Machine Learning I: Hands-On 3 - Worked Solutions"
+---
+
+# 3.1 k-nearest neighbors and Naive Bayes: worked solutions
+
+## 3.1.1 Numerical k-NN
+
+The query is
+
+$$
+q=(6,5),
+$$
+
+and the Manhattan distance is
+
+$$
+d_i=|\text{Age}_i-6|+|\text{Acidity}_i-5|.
+$$
+
+Compute the distance for every observation:
+
+| Example | Point | Quality | Calculation | Distance |
+|---:|:---:|:---:|:---|---:|
+| 1 | $(4,3)$ | Good | $|4-6|+|3-5|=2+2$ | 4 |
+| 2 | $(1,3)$ | Bad | $|1-6|+|3-5|=5+2$ | 7 |
+| 3 | $(6,2)$ | Good | $|6-6|+|2-5|=0+3$ | 3 |
+| 4 | $(3,7)$ | Bad | $|3-6|+|7-5|=3+2$ | 5 |
+| 5 | $(7,4)$ | Good | $|7-6|+|4-5|=1+1$ | 2 |
+| 6 | $(4,1)$ | Bad | $|4-6|+|1-5|=2+4$ | 6 |
+| 7 | $(6,4)$ | Good | $|6-6|+|4-5|=0+1$ | 1 |
+| 8 | $(4,7)$ | Bad | $|4-6|+|7-5|=2+2$ | 4 |
+| 9 | $(3,6)$ | Good | $|3-6|+|6-5|=3+1$ | 4 |
+| 10 | $(6,1)$ | Bad | $|6-6|+|1-5|=0+4$ | 4 |
+
+Ordering by distance gives
+
+$$
+7\;(1),\quad 5\;(2),\quad 3\;(3),\quad
+1,8,9,10\;(4),\quad 4\;(5),\quad 6\;(6),\quad 2\;(7).
+$$
+
+For $k=3$, the neighbors are Examples 7, 5, and 3. All three are **Good**, so
+
+$$
+\boxed{\hat y=\text{Good}}.
+$$
+
+![](../media/handout/image2.png){width="5.7in" fig-align="center"}
+
+The tie at distance $4$ does not affect the $k=3$ prediction, but it matters if the neighbor cutoff reaches that distance. A practical implementation must use a deterministic policy for equal distances.
+
+As $k$ increases, each prediction averages information over a larger neighborhood. This generally smooths the decision regions: very small $k$ can follow local sample irregularities closely, whereas larger $k$ tends to increase bias and reduce variance.
+
+## 3.1.2 Categorical k-NN
+
+For the query
+
+$$
+q=(\text{Red, SUV, Domestic, Automatic, Gasoline}),
+$$
+
+we count one unit of distance for every mismatching categorical feature.
+
+| Example | Stolen? | Mismatches | Distance |
+|---:|:---:|:---|---:|
+| 1 | Yes | none | 0 |
+| 2 | Yes | Fuel | 1 |
+| 3 | Yes | Origin, Transmission | 2 |
+| 4 | No | Origin, Transmission | 2 |
+| 5 | No | Type, Origin, Transmission, Fuel | 4 |
+| 6 | Yes | Color, Type, Origin, Transmission, Fuel | 5 |
+| 7 | Yes | Color, Type, Origin, Transmission, Fuel | 5 |
+| 8 | No | Color, Origin, Fuel | 3 |
+| 9 | Yes | Type, Origin, Fuel | 3 |
+| 10 | No | Color, Type, Transmission, Fuel | 4 |
+| 11 | Yes | Color, Type, Transmission, Fuel | 4 |
+
+The first two nearest neighbors are Examples 1 and 2, both **Yes**. The third-neighbor position is tied between Examples 3 and 4 at distance 2.
+
+If ties are resolved by original row order, Example 3 is selected and the $k=3$ vote is three **Yes** votes. If all observations tied at the cutoff are considered, the vote is three **Yes** versus one **No**. Either way, this query is predicted as
+
+$$
+\boxed{\text{Stolen = Yes}}.
+$$
+
+The 2D Type-versus-Origin projection is useful for intuition but cannot determine the actual prediction on its own because **Color, Transmission, and Fuel also contribute to the distance**. Two observations that overlap in the displayed projection may still be separated in the full five-dimensional feature space.
+
+![](../media/handout/image6.png){width="5.5in" fig-align="center"}
+
+## 3.1.3 Naive Bayes
+
+There are eight observations:
+
+- 3 with class **Yes**;
+- 5 with class **No**.
+
+Therefore the class priors are
+
+$$
+P(\text{Yes})=\frac38,
+\qquad
+P(\text{No})=\frac58.
+$$
+
+### Step 1: Probabilities conditioned on `Yes`
+
+Among the three stolen cars:
+
+- all 3 are Red;
+- all 3 are SUVs;
+- 2 of the 3 are Domestic.
+
+Hence
+
+$$
+P(\text{Red}\mid\text{Yes})=1,
+$$
+
+$$
+P(\text{SUV}\mid\text{Yes})=1,
+$$
+
+$$
+P(\text{Domestic}\mid\text{Yes})=\frac23.
+$$
+
+The unnormalized Naive Bayes score is
+
+$$
+\begin{aligned}
+S_{\text{Yes}}
+&=P(\text{Yes})
+P(\text{Red}\mid\text{Yes})
+P(\text{SUV}\mid\text{Yes})
+P(\text{Domestic}\mid\text{Yes})\\
+&=\frac38\times1\times1\times\frac23\\
+&=\frac14=0.25.
+\end{aligned}
+$$
+
+### Step 2: Probabilities conditioned on `No`
+
+Among the five non-stolen cars:
+
+- 2 are Red;
+- 2 are SUVs;
+- 2 are Domestic.
+
+Thus
+
+$$
+P(\text{Red}\mid\text{No})
+=P(\text{SUV}\mid\text{No})
+=P(\text{Domestic}\mid\text{No})
+=\frac25.
+$$
+
+The score for class **No** is
+
+$$
+\begin{aligned}
+S_{\text{No}}
+&=\frac58\times\frac25\times\frac25\times\frac25\\
+&=0.04.
+\end{aligned}
+$$
+
+### Step 3: Compare the class scores
+
+Since
+
+$$
+0.25>0.04,
+$$
+
+Naive Bayes predicts
+
+$$
+\boxed{\text{Stolen = Yes}}.
+$$
+
+The numbers $0.25$ and $0.04$ are proportional to the posterior probabilities. For classification, their common normalization constant is unnecessary because only their relative magnitude determines the predicted class.
+
+The same calculation can be repeated for every possible discrete feature combination. This produces a global partition of the discrete feature space: each combination is assigned to whichever class receives the larger posterior score.
+
+![](../media/handout/naive_bayes_decision_space.png){width="5.0in" fig-align="center" fig-cap="Discrete Naive Bayes decision regions over Type and Origin, with the query marked by a star."}
+
+> **ML insight: why k-NN and Naive Bayes can disagree**
+>
+> k-NN asks which labelled observations are locally closest to the query. Naive Bayes asks which class, according to a global probabilistic model, is more likely to produce the observed feature values. The algorithms therefore encode different inductive biases even when trained on exactly the same data.

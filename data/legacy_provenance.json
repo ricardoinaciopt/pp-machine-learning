@@ -1,0 +1,119 @@
+{
+  "evidence": "Publisher metadata and version-1 download checked against repository and supplied archive. The repository owner confirms that ds1-ds3 are toy synthetic make_classification outputs and authorises their redistribution with the course. Original generation settings are unavailable.",
+  "hotel_reservations": {
+    "file": "data/ho01/HotelReservations.csv",
+    "sha256": "d25e1d4680b2b91bcf5fd0a6b690f26c3bdfd52eb4e434e69018cb7bd60f6782",
+    "rows": 36275,
+    "columns": [
+      "Booking_ID",
+      "no_of_adults",
+      "no_of_children",
+      "no_of_weekend_nights",
+      "no_of_week_nights",
+      "type_of_meal_plan",
+      "required_car_parking_space",
+      "room_type_reserved",
+      "lead_time",
+      "arrival_year",
+      "arrival_month",
+      "arrival_date",
+      "market_segment_type",
+      "repeated_guest",
+      "no_of_previous_cancellations",
+      "no_of_previous_bookings_not_canceled",
+      "avg_price_per_room",
+      "no_of_special_requests",
+      "booking_status"
+    ],
+    "publisher": "Ahsan Raza",
+    "publisher_account": "ahsan81",
+    "title": "Hotel Reservations Dataset",
+    "version": 1,
+    "license": "Attribution 4.0 International (CC BY 4.0)",
+    "source_url": "https://www.kaggle.com/datasets/ahsan81/hotel-reservations-classification-dataset/versions/1",
+    "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/ahsan81/hotel-reservations-classification-dataset",
+    "download_url": "https://www.kaggle.com/api/v1/datasets/download/ahsan81/hotel-reservations-classification-dataset?datasetVersionNumber=1",
+    "changes": "None; byte-identical CSV snapshot.",
+    "identical_archive_files": [
+      "Hands-On1/HotelReservations.csv",
+      "Hands-On2/HotelReservations.csv"
+    ]
+  },
+  "synthetic_datasets": [
+    {
+      "file": "data/shared/ds1.csv",
+      "sha256": "81ad38df5841d325a88f3358a874c206927448a2721e5373e3bffc7a1e16637e",
+      "rows": 200,
+      "columns": [
+        "X1",
+        "X2",
+        "Class"
+      ],
+      "identical_archive_files": [
+        "Hands-On6/ds1.csv",
+        "Hands-On3/ds1.csv"
+      ],
+      "license": "CC BY 4.0",
+      "redistribution_status": "owner-authorised",
+      "generator_found": true,
+      "generator": "sklearn.datasets.make_classification",
+      "generator_evidence": "Confirmed by the repository owner; original code unavailable.",
+      "generation_code_available": false,
+      "generation_parameters": null,
+      "random_state": null,
+      "exact_reproduction_verified": false,
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "redistribution_evidence": "Owner confirmed toy synthetic data and requested licensing and publication of the repository; scope recorded in LICENSE.md."
+    },
+    {
+      "file": "data/shared/ds2.csv",
+      "sha256": "b2c14ec2349a7a759c9aa0b2771186f6bea9f4151daf319eecdd339dea0dee8f",
+      "rows": 200,
+      "columns": [
+        "X1",
+        "X2",
+        "Class"
+      ],
+      "identical_archive_files": [
+        "Hands-On6/ds2.csv",
+        "Hands-On3/ds2.csv"
+      ],
+      "license": "CC BY 4.0",
+      "redistribution_status": "owner-authorised",
+      "generator_found": true,
+      "generator": "sklearn.datasets.make_classification",
+      "generator_evidence": "Confirmed by the repository owner; original code unavailable.",
+      "generation_code_available": false,
+      "generation_parameters": null,
+      "random_state": null,
+      "exact_reproduction_verified": false,
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "redistribution_evidence": "Owner confirmed toy synthetic data and requested licensing and publication of the repository; scope recorded in LICENSE.md."
+    },
+    {
+      "file": "data/shared/ds3.csv",
+      "sha256": "5d8723179531fa51bfa50ea1ca27fb6a2ecc78cb5a2ab0ba0d9a683c3ab2ba4f",
+      "rows": 200,
+      "columns": [
+        "X1",
+        "X2",
+        "Class"
+      ],
+      "identical_archive_files": [
+        "Hands-On6/ds3.csv",
+        "Hands-On3/ds3.csv"
+      ],
+      "license": "CC BY 4.0",
+      "redistribution_status": "owner-authorised",
+      "generator_found": true,
+      "generator": "sklearn.datasets.make_classification",
+      "generator_evidence": "Confirmed by the repository owner; original code unavailable.",
+      "generation_code_available": false,
+      "generation_parameters": null,
+      "random_state": null,
+      "exact_reproduction_verified": false,
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "redistribution_evidence": "Owner confirmed toy synthetic data and requested licensing and publication of the repository; scope recorded in LICENSE.md."
+    }
+  ]
+}

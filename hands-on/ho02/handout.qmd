@@ -1,0 +1,66 @@
+---
+title: "Machine Learning I: Hands-On 2"
+---
+
+# 2.1 CART decision trees
+
+Consider a classification dataset with three binary input attributes, $A_1$, $A_2$, and $A_3$, and a binary output $Y$. A CART decision tree learns a sequence of splits that recursively divides the feature space. In the figures below, the lines indicate the final decision boundaries produced by the tree. The features used by the tree determine where those axis-aligned partitions are placed.
+
+The following small dataset is used as a reference example:
+
+| Example | $A_1$ | $A_2$ | $A_3$ | $Y$ |
+|---:|---:|---:|---:|---:|
+| 1 | 0 | 0 | 1 | 1 |
+| 2 | 1 | 0 | 1 | 1 |
+| 3 | 1 | 1 | 1 | 1 |
+| 4 | 0 | 0 | 0 | 0 |
+| 5 | 0 | 1 | 0 | 1 |
+
+![](media/handout/cart_example_boundary.png){width="4.8in" fig-align="center"}
+
+We use CART with **Gini impurity** and choose, at each node, the split with the **minimum weighted Gini impurity**. For a node containing two classes,
+
+$$
+G = 1 - \left(p_0^2+p_1^2\right),
+$$
+
+where $p_c$ is the fraction of observations in class $c$.
+
+For a candidate split producing left and right child nodes,
+
+$$
+G_{\text{split}}
+=\frac{n_L}{n}G_L+\frac{n_R}{n}G_R.
+$$
+
+The split is evaluated by computing the impurity of each child and then weighting each impurity by the proportion of observations sent to that child. A pure child node has Gini impurity equal to zero.
+
+Now apply the same procedure to the dataset below, using the reference example above as a guide.
+
+| Example | $A_1$ | $A_2$ | $A_3$ | $Y$ |
+|---:|---:|---:|---:|---:|
+| 1 | 1 | 0 | 0 | 0 |
+| 2 | 1 | 0 | 1 | 0 |
+| 3 | 0 | 1 | 0 | 0 |
+| 4 | 1 | 1 | 1 | 1 |
+| 5 | 1 | 1 | 0 | 1 |
+
+![](media/handout/cart_exercise_boundary.png){width="4.8in" fig-align="center"}
+
+Your task is to use CART to learn a decision tree for these data. **Show the computations used to decide which attribute is selected at every node.** The final tree should be consistent with the geometry of the feature-space partition shown in the figure.
+
+1. Compute the Gini impurity at the root node.
+2. Evaluate the candidate root split on each feature $A_1$, $A_2$, and $A_3$:
+   - identify which observations go to each child;
+   - compute the class proportions in each child;
+   - compute the Gini impurity of each child;
+   - compute the weighted Gini impurity of the split.
+3. Select the root split with the smallest weighted impurity.
+4. Continue recursively for every child that is not pure. At each new node, show the same calculations used to select the next split.
+5. Stop when the leaves are pure or no useful split remains.
+6. Draw the final tree and write the corresponding decision rules.
+7. Relate the tree to the figure: which feature creates the first partition of the space, and which feature or features refine the remaining mixed region?
+
+> **ML insight: a tree is a partition of feature space**
+>
+> A CART tree is not only a hierarchy of if-then rules. Every internal node introduces an axis-aligned cut in feature space. Following the tree from root to leaf therefore corresponds to locating an observation inside progressively smaller regions of that space.

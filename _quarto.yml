@@ -1,0 +1,41 @@
+project:
+  type: default
+  render:
+    - hands-on/ho02/handout.qmd
+    - hands-on/ho02/solutions/handout.qmd
+    - hands-on/ho03/handout.qmd
+    - hands-on/ho03/solutions/handout.qmd
+    - hands-on/ho04/handout.qmd
+    - hands-on/ho04/solutions/handout.qmd
+    - hands-on/ho05/handout.qmd
+    - hands-on/ho05/solutions/handout.qmd
+    - hands-on/ho06/handout.qmd
+    - hands-on/ho06/solutions/handout.qmd
+    - hands-on/ho07/handout.qmd
+    - hands-on/ho07/solutions/handout.qmd
+    - hands-on/ho08/handout.qmd
+    - hands-on/ho08/solutions/handout.qmd
+    - hands-on/ho09/handout.qmd
+    - hands-on/ho09/solutions/handout.qmd
+    - hands-on/ho10/handout.qmd
+    - hands-on/ho10/solutions/handout.qmd
+
+format:
+  pdf:
+    pdf-engine: lualatex
+    documentclass: scrartcl
+    papersize: a4
+    fontsize: 10pt
+    toc: false
+    number-sections: false
+    include-in-header: templates/latex/handout-preamble.tex
+  docx:
+    reference-doc: templates/reference.docx
+    toc: false
+
+handout-image-scale: 0.85
+fig-align: center
+filters:
+  - templates/filters/scale-handout-images.lua
+  - templates/filters/handout-layout.lua
+  - templates/filters/center-pdf-images.lua

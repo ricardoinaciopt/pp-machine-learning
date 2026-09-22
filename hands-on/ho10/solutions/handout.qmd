@@ -1,0 +1,393 @@
+---
+title: "Machine Learning I — Hands-On 10 — Worked Solutions"
+format:
+  pdf: default
+  docx: default
+---
+
+# 10.1 From transactions to itemsets ✎
+
+In association rule mining, the data are represented as transactions containing sets of items. The exercise uses the following 10 transactions.
+
+| Transaction ID | Items bought |
+|:---|:---|
+| T1 | Bread, Milk, Butter |
+| T2 | Bread, Milk |
+| T3 | Bread, Eggs |
+| T4 | Milk, Butter |
+| T5 | Bread, Milk, Butter, Eggs |
+| T6 | Bread, Butter |
+| T7 | Milk, Eggs |
+| T8 | Bread, Milk, Butter |
+| T9 | Bread, Milk, Coffee |
+| T10 | Coffee, Eggs |
+
+For $N=10$ transactions,
+
+$$
+\operatorname{support}(X)=\frac{\#\{t:X\subseteq t\}}{10}.
+$$
+
+## 1. Support of one-item itemsets
+
+### Bread
+
+Bread appears in T1, T2, T3, T5, T6, T8, and T9: 7 transactions.
+
+$$
+\operatorname{support}(\{\text{Bread}\})=\frac{7}{10}=0.70=70\%.
+$$
+
+### Milk
+
+Milk appears in T1, T2, T4, T5, T7, T8, and T9: 7 transactions.
+
+$$
+\operatorname{support}(\{\text{Milk}\})=\frac{7}{10}=70\%.
+$$
+
+### Butter
+
+Butter appears in T1, T4, T5, T6, and T8: 5 transactions.
+
+$$
+\operatorname{support}(\{\text{Butter}\})=\frac{5}{10}=50\%.
+$$
+
+### Eggs
+
+Eggs appears in T3, T5, T7, and T10: 4 transactions.
+
+$$
+\operatorname{support}(\{\text{Eggs}\})=\frac{4}{10}=40\%.
+$$
+
+### Coffee
+
+Coffee appears in T9 and T10: 2 transactions.
+
+$$
+\operatorname{support}(\{\text{Coffee}\})=\frac{2}{10}=20\%.
+$$
+
+The one-item results are therefore:
+
+| Itemset | Count | Support |
+|:---|---:|---:|
+| {Bread} | 7 | 70% |
+| {Milk} | 7 | 70% |
+| {Butter} | 5 | 50% |
+| {Eggs} | 4 | 40% |
+| {Coffee} | 2 | 20% |
+
+## 2. Support of larger itemsets
+
+### Bread and Milk
+
+Both items occur together in T1, T2, T5, T8, and T9: 5 transactions.
+
+$$
+\operatorname{support}(\{\text{Bread},\text{Milk}\})=\frac{5}{10}=50\%.
+$$
+
+### Bread and Butter
+
+They occur together in T1, T5, T6, and T8: 4 transactions.
+
+$$
+\operatorname{support}(\{\text{Bread},\text{Butter}\})=\frac{4}{10}=40\%.
+$$
+
+### Milk and Butter
+
+They occur together in T1, T4, T5, and T8: 4 transactions.
+
+$$
+\operatorname{support}(\{\text{Milk},\text{Butter}\})=\frac{4}{10}=40\%.
+$$
+
+### Bread, Milk, and Butter
+
+All three occur together in T1, T5, and T8: 3 transactions.
+
+$$
+\operatorname{support}(\{\text{Bread},\text{Milk},\text{Butter}\})=\frac{3}{10}=30\%.
+$$
+
+### Coffee and Eggs
+
+They occur together only in T10: 1 transaction.
+
+$$
+\operatorname{support}(\{\text{Coffee},\text{Eggs}\})=\frac{1}{10}=10\%.
+$$
+
+| Itemset | Count | Support |
+|:---|---:|---:|
+| {Bread, Milk} | 5 | 50% |
+| {Bread, Butter} | 4 | 40% |
+| {Milk, Butter} | 4 | 40% |
+| {Bread, Milk, Butter} | 3 | 30% |
+| {Coffee, Eggs} | 1 | 10% |
+
+## 3. Frequent itemsets for $\operatorname{minsup}=30\%$
+
+An itemset is frequent when its support is at least 30%.
+
+Therefore, the frequent itemsets among those considered are:
+
+- {Bread};
+- {Milk};
+- {Butter};
+- {Eggs};
+- {Bread, Milk};
+- {Bread, Butter};
+- {Milk, Butter};
+- {Bread, Milk, Butter}.
+
+{Coffee} and {Coffee, Eggs} are not frequent because their supports are 20% and 10%, respectively.
+
+## 4. Why support is not implication strength
+
+Support measures **how often an itemset occurs**. For example, {Bread, Milk} has support 50%, meaning that Bread and Milk appear together in half of the transactions.
+
+However, support alone does not tell us how often Milk appears **given that Bread appears**. The itemset is symmetric: {Bread, Milk} and {Milk, Bread} are the same set. To describe a directional implication, we need confidence.
+
+::: {.callout-note title="ML insight — frequency and direction are different questions"}
+Support is a property of a set of co-occurring items. Confidence is a property of a directional rule. The same joint frequency can therefore produce different rule confidences when the antecedents have different frequencies.
+:::
+
+# 10.2 From itemsets to association rules ✎
+
+For a rule $X\rightarrow Y$,
+
+$$
+\operatorname{support}(X\rightarrow Y)=\operatorname{support}(X\cup Y),
+$$
+
+and
+
+$$
+\operatorname{confidence}(X\rightarrow Y)
+=\frac{\operatorname{support}(X\cup Y)}{\operatorname{support}(X)}.
+$$
+
+Equivalently, using counts,
+
+$$
+\operatorname{confidence}(X\rightarrow Y)
+=\frac{\#(X\cup Y)}{\#(X)}.
+$$
+
+## 1. Bread $\rightarrow$ Milk
+
+The union {Bread, Milk} occurs in 5 transactions, while Bread occurs in 7.
+
+$$
+\operatorname{support}=\frac{5}{10}=50\%,
+$$
+
+$$
+\operatorname{confidence}=\frac{5}{7}\approx0.7143=71.43\%.
+$$
+
+## 2. Milk $\rightarrow$ Bread
+
+The same union occurs in 5 transactions, and Milk also occurs in 7.
+
+$$
+\operatorname{support}=50\%,
+$$
+
+$$
+\operatorname{confidence}=\frac{5}{7}\approx71.43\%.
+$$
+
+## 3. Bread $\rightarrow$ Butter
+
+Bread and Butter occur together in 4 transactions, while Bread occurs in 7.
+
+$$
+\operatorname{support}=\frac{4}{10}=40\%,
+$$
+
+$$
+\operatorname{confidence}=\frac{4}{7}\approx57.14\%.
+$$
+
+## 4. Butter $\rightarrow$ Bread
+
+The joint support is still 40%, but Butter occurs in only 5 transactions.
+
+$$
+\operatorname{confidence}=\frac{4}{5}=80\%.
+$$
+
+This pair illustrates why reversing a rule leaves support unchanged but can change confidence.
+
+## 5. {Bread, Milk} $\rightarrow$ Butter
+
+The three-item set {Bread, Milk, Butter} occurs in 3 transactions. The antecedent {Bread, Milk} occurs in 5.
+
+$$
+\operatorname{support}=\frac{3}{10}=30\%,
+$$
+
+$$
+\operatorname{confidence}=\frac{3}{5}=60\%.
+$$
+
+## 6. Coffee $\rightarrow$ Eggs
+
+Coffee and Eggs occur together only in T10, while Coffee occurs in T9 and T10.
+
+$$
+\operatorname{support}=\frac{1}{10}=10\%,
+$$
+
+$$
+\operatorname{confidence}=\frac{1}{2}=50\%.
+$$
+
+The results are:
+
+| Rule | Support | Confidence |
+|:---|---:|---:|
+| {Bread} $\rightarrow$ {Milk} | 50% | 71.43% |
+| {Milk} $\rightarrow$ {Bread} | 50% | 71.43% |
+| {Bread} $\rightarrow$ {Butter} | 40% | 57.14% |
+| {Butter} $\rightarrow$ {Bread} | 40% | 80% |
+| {Bread, Milk} $\rightarrow$ {Butter} | 30% | 60% |
+| {Coffee} $\rightarrow$ {Eggs} | 10% | 50% |
+
+## 7–8. Comparing Bread $\rightarrow$ Milk and Milk $\rightarrow$ Bread
+
+The two rules have the same support because both use the same union {Bread, Milk}. In this particular dataset, they also happen to have the same confidence because Bread and Milk each have support 70%.
+
+In general, reversing a rule does **not** preserve confidence. If $\operatorname{support}(X)\neq\operatorname{support}(Y)$, then
+
+$$
+\frac{\operatorname{support}(X\cup Y)}{\operatorname{support}(X)}
+\neq
+\frac{\operatorname{support}(X\cup Y)}{\operatorname{support}(Y)}.
+$$
+
+# 10.3 Selecting rules using support and confidence ✎
+
+The thresholds are
+
+$$
+\operatorname{minsup}=30\%,
+\qquad
+\operatorname{minconf}=70\%.
+$$
+
+A rule is valid only if it satisfies **both** conditions.
+
+----------------------------------------------  ----------  ------------  ----------------  --------------------  --------
+Rule                                               Support    Confidence   Support >=30%?    Confidence >=70%?     Valid? 
+----------------------------------------------  ----------  ------------  ----------------  --------------------  --------
+Bread $\rightarrow$ Milk                               50%        71.43%        Yes                 Yes           **Yes** 
+
+Milk $\rightarrow$ Bread                               50%        71.43%        Yes                 Yes           **Yes** 
+
+Bread $\rightarrow$ Butter                             40%        57.14%        Yes                  No              No   
+
+Butter $\rightarrow$ Bread                             40%           80%        Yes                 Yes           **Yes** 
+
+Bread, Milk $\rightarrow$ Butter                       30%           60%        Yes                  No              No   
+
+Coffee $\rightarrow$ Eggs                              10%           50%         No                  No              No   
+
+----------------------------------------------  ----------  ------------  ----------------  --------------------  --------
+
+Therefore, with `minsup = 30%` and `minconf = 70%`, the accepted rules are:
+
+- Bread $\rightarrow$ Milk;
+- Milk $\rightarrow$ Bread;
+- Butter $\rightarrow$ Bread.
+
+If the minimum confidence is increased to 90%, none of these candidate rules remains valid because none reaches 90% confidence.
+
+When the minimum confidence threshold becomes stricter, fewer rules are accepted. The procedure becomes more selective, retaining only rules where the consequent appears very reliably when the antecedent appears. This can remove weak rules, but it can also remove moderately reliable relationships that may still be useful.
+
+# 10.4 Why confidence can be misleading ✎
+
+Confidence can be high simply because the consequent is common. Lift corrects for the consequent's marginal frequency:
+
+$$
+\operatorname{lift}(X\rightarrow Y)
+=\frac{\operatorname{confidence}(X\rightarrow Y)}{\operatorname{support}(Y)}.
+$$
+
+- lift $>1$: positive association;
+- lift $=1$: approximately independent;
+- lift $<1$: negative association.
+
+## 1. Bread $\rightarrow$ Milk
+
+$$
+\operatorname{lift}
+=\frac{0.7143}{0.70}
+\approx1.02.
+$$
+
+The rule is close to independence.
+
+## 2. Milk $\rightarrow$ Bread
+
+$$
+\operatorname{lift}
+=\frac{0.7143}{0.70}
+\approx1.02.
+$$
+
+Again, the association is close to independence.
+
+## 3. Coffee $\rightarrow$ Eggs
+
+$$
+\operatorname{lift}
+=\frac{0.50}{0.40}
+=1.25.
+$$
+
+This is a positive association, but its support is only 10%.
+
+## 4. Eggs $\rightarrow$ Coffee
+
+The confidence is
+
+$$
+\operatorname{confidence}(\{\text{Eggs}\}\rightarrow\{\text{Coffee}\})
+=\frac{1/10}{4/10}=\frac14=0.25.
+$$
+
+Therefore,
+
+$$
+\operatorname{lift}
+=\frac{0.25}{0.20}
+=1.25.
+$$
+
+The lift is the same as in the reverse direction because lift measures departure from independence symmetrically through the joint occurrence, even though confidence is directional.
+
+The summary is:
+
+| Rule | Support | Confidence | Lift | Interpretation |
+|:---|---:|---:|---:|:---|
+| Bread $\rightarrow$ Milk | 50% | 71.43% | 1.02 | approximately independent |
+| Milk $\rightarrow$ Bread | 50% | 71.43% | 1.02 | approximately independent |
+| Coffee $\rightarrow$ Eggs | 10% | 50% | 1.25 | positive association, low support |
+| Eggs $\rightarrow$ Coffee | 10% | 25% | 1.25 | positive association, low support and confidence |
+
+## 5–6. Interpreting “interesting” rules
+
+Bread $\rightarrow$ Milk and Milk $\rightarrow$ Bread have relatively high support and confidence, but their lift is close to 1. Much of their apparent reliability comes from Bread and Milk already being common.
+
+Coffee $\rightarrow$ Eggs has the largest lift among the listed rules, so it shows the strongest departure from independence. However, the rule is supported by only one joint transaction, so that estimate is based on very little evidence.
+
+::: {.callout-note title="ML insight — interestingness is objective-dependent"}
+There is no universally most interesting rule. If the objective is **coverage**, support matters. If it is **directional reliability**, confidence matters. If it is **departure from independence**, lift matters. A high-lift rule with very low support should still be interpreted cautiously because it is estimated from few observations.
+:::

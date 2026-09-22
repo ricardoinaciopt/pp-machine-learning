@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "datasets": [
+    {
+      "uci_id": 165,
+      "name": "Concrete Compressive Strength",
+      "folder": "ho05",
+      "filename": "concrete_compressive_strength.csv",
+      "rows": 1030,
+      "source_columns": [
+        "Cement",
+        "Blast Furnace Slag",
+        "Fly Ash",
+        "Water",
+        "Superplasticizer",
+        "Coarse Aggregate",
+        "Fine Aggregate",
+        "Age",
+        "Concrete compressive strength"
+      ],
+      "columns": [
+        "cement",
+        "slag",
+        "fly_ash",
+        "water",
+        "superplasticizer",
+        "coarse_aggregate",
+        "fine_aggregate",
+        "age",
+        "strength_mpa"
+      ],
+      "data_url": "https://archive.ics.uci.edu/static/public/165/data.csv",
+      "source_url": "https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength",
+      "doi": "10.24432/C5PK67",
+      "citation": "Yeh, I. (1998). Concrete Compressive Strength [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5PK67.",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_sha256": "8d4b15b6fc68cd932d745cbd663d5ceae66dd54422e99c1e4865f2936ab7e2af",
+      "changes": "Column names normalized; CSV serialization standardized. All values and row order retained.",
+      "normalised_sha256": "400e9d4cdcbb428c60449df9e2440dd1f8890836a83118d8096502e1dfaa8aaa"
+    },
+    {
+      "uci_id": 292,
+      "name": "Wholesale customers",
+      "folder": "ho07",
+      "filename": "wholesale_customers.csv",
+      "rows": 440,
+      "source_columns": [
+        "Channel",
+        "Region",
+        "Fresh",
+        "Milk",
+        "Grocery",
+        "Frozen",
+        "Detergents_Paper",
+        "Delicassen"
+      ],
+      "columns": [
+        "Channel",
+        "Region",
+        "Fresh",
+        "Milk",
+        "Grocery",
+        "Frozen",
+        "Detergents_Paper",
+        "Delicassen"
+      ],
+      "data_url": "https://archive.ics.uci.edu/static/public/292/data.csv",
+      "source_url": "https://archive.ics.uci.edu/dataset/292/wholesale+customers",
+      "doi": "10.24432/C5030X",
+      "citation": "Cardoso, M. (2013). Wholesale customers [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5030X.",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_sha256": "c3d018c643565b85cee733c4a2ac76dd76e080e857cb23f0ccfcc2e15a6c17ef",
+      "changes": "CSV serialization standardized. All columns, values and row order retained.",
+      "normalised_sha256": "d0213b7d856bc7f98f2f52a86bedb5cb57d5b8e19959605e75bd4532d4ee0896"
+    }
+  ],
+  "redistribution": {
+    "status": "accepted",
+    "authority": "Repository owner approved inclusion of the verified UCI snapshots under their recorded CC BY 4.0 source terms.",
+    "policy": "LICENSE.md#uci-redistribution-policy",
+    "scope": [
+      165,
+      292
+    ]
+  }
+}

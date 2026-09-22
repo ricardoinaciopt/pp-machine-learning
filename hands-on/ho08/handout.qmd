@@ -1,0 +1,92 @@
+---
+title: "Machine Learning I: Hands-On 8"
+---
+
+# 8.1 Ensembles
+
+Consider a binary classification problem where four classifiers, Classifier A, Classifier B, Classifier C, and Classifier D, were trained to predict the target class of 10 test examples. The first row of the table contains the true target values, while the remaining rows contain the predictions made by each classifier. Assume that class labels are binary, with possible values 0 and 1. Use the table to analyze both the individual classifiers and possible majority-vote ensembles.
+
+|                  | **ex1** | **ex2** | **ex3** | **ex4** | **ex5** | **ex6** | **ex7** | **ex8** | **ex9** | **ex10** |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Target**  | **1** | **0** | **0** | **0** | **0** | **1** | **0** | **1** | **0** | **0** |
+| **A** | 1 | 1 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 |
+| **B** | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
+| **C** | 1 | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 1 |
+| **D** | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+
+1. Compute the accuracy of each classifier on the test set. For each classifier, compare its predictions with the true target values example by example, count the number of correct predictions, and divide by the total number of test examples.
+
+2. Suppose you want to create a **majority-vote ensemble** composed of exactly three classifiers. The final prediction of the ensemble is the class predicted by at least two of the three classifiers. Compute the majority-vote predictions for each possible ensemble of three classifiers:
+
+   - A + B + C;
+   - A + B + D;
+   - A + C + D;
+   - B + C + D.
+
+   Compute the resulting accuracy of each ensemble on the test set.
+
+3. Identify which group of three classifiers produces the highest majority-vote accuracy, and compare this ensemble accuracy with the individual accuracies computed in Exercise 8.1.1. Explain why the best ensemble can outperform the individual classifiers even when none of the classifiers is perfect.
+
+# 8.2 Imbalanced Domain Learning
+
+Accuracy can be misleading when one class is much less frequent than the other. Consider a second binary classification problem with **20 test examples**. Class **1** is the positive class and represents the minority: only examples `ex1` and `ex11` are positive.
+
+The predictions of four classifiers are shown below. The table is split in two only to keep it readable on the page.
+
+|                  | **ex1** | **ex2** | **ex3** | **ex4** | **ex5** | **ex6** | **ex7** | **ex8** | **ex9** | **ex10** |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Target**  | **1** | **0** | **0** | **0** | **0** | **0** | **0** | **0** | **0** | **0** |
+| **A** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **B** | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **C** | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **D** | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+|                  | **ex11** | **ex12** | **ex13** | **ex14** | **ex15** | **ex16** | **ex17** | **ex18** | **ex19** | **ex20** |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Target**  | **1** | **0** | **0** | **0** | **0** | **0** | **0** | **0** | **0** | **0** |
+| **A** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **B** | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **C** | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **D** | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Assume class 1 is the positive class and class 0 is the negative class. The four entries of a binary confusion matrix are:
+
+| Term | Meaning |
+|:---|:---|
+| **TP** | True Positive: predicted 1 and the true class is 1 |
+| **FP** | False Positive: predicted 1 but the true class is 0 |
+| **FN** | False Negative: predicted 0 but the true class is 1 |
+| **TN** | True Negative: predicted 0 and the true class is 0 |
+
+![](media/handout/media/image3.png){width="4.2in" fig-align="center"}
+
+1. For each classifier, compute TP, FP, FN, and TN. Present the confusion-matrix values separately for Classifier A, Classifier B, Classifier C, and Classifier D.
+
+2. Based on the confusion-matrix values obtained in the previous exercise, compute **accuracy**, **precision**, **recall**, and **F1-score** for each classifier:
+
+$$
+\text{Accuracy}=\frac{TP+TN}{TP+TN+FP+FN},
+$$
+
+$$
+\text{Precision}=\frac{TP}{TP+FP},
+\qquad
+\text{Recall}=\frac{TP}{TP+FN},
+$$
+
+$$
+F_1=2\frac{\text{Precision}\cdot\text{Recall}}{\text{Precision}+\text{Recall}}.
+$$
+
+If a classifier never predicts the positive class, use precision $=0$ and $F_1=0$ for this exercise.
+
+3. If you had to choose only one classifier, would the answer be the same for every application? Discuss the following two objectives using the measures computed above:
+
+   - false negatives are extremely costly, so detecting the positive class is the priority;
+   - false positives are very costly, but detecting at least some positive examples is still required.
+
+   Explain why **accuracy alone may be insufficient** in an imbalanced classification problem, and discuss the trade-off between detecting positive examples and avoiding false positives.
+
+> **Conceptual focus**
+>
+> The confusion matrix exposes *which* errors a classifier makes. Accuracy collapses those errors into one number. Precision and recall separate false alarms from missed positives. In an imbalanced problem, model selection therefore depends on the error objective rather than on a context-free notion of the “best” classifier.

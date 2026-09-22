@@ -1,0 +1,61 @@
+{
+  "category_counts": {
+    "Channel": {
+      "1": 298,
+      "2": 142
+    },
+    "Region": {
+      "1": 77,
+      "2": 47,
+      "3": 316
+    }
+  },
+  "columns": [
+    "Channel",
+    "Region",
+    "Fresh",
+    "Milk",
+    "Grocery",
+    "Frozen",
+    "Detergents_Paper",
+    "Delicassen"
+  ],
+  "duplicate_rows_beyond_first": 0,
+  "missing_cells": 0,
+  "ranges": {
+    "Channel": {
+      "max": 2.0,
+      "min": 1.0
+    },
+    "Delicassen": {
+      "max": 47943.0,
+      "min": 3.0
+    },
+    "Detergents_Paper": {
+      "max": 40827.0,
+      "min": 3.0
+    },
+    "Fresh": {
+      "max": 112151.0,
+      "min": 3.0
+    },
+    "Frozen": {
+      "max": 60869.0,
+      "min": 25.0
+    },
+    "Grocery": {
+      "max": 92780.0,
+      "min": 3.0
+    },
+    "Milk": {
+      "max": 73498.0,
+      "min": 55.0
+    },
+    "Region": {
+      "max": 3.0,
+      "min": 1.0
+    }
+  },
+  "rows": 440,
+  "uci_id": 292
+}

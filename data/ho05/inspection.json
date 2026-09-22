@@ -1,0 +1,57 @@
+{
+  "columns": [
+    "cement",
+    "slag",
+    "fly_ash",
+    "water",
+    "superplasticizer",
+    "coarse_aggregate",
+    "fine_aggregate",
+    "age",
+    "strength_mpa"
+  ],
+  "duplicate_rows_beyond_first": 25,
+  "ingredient_groups": 427,
+  "missing_cells": 0,
+  "ranges": {
+    "age": {
+      "max": 365.0,
+      "min": 1.0
+    },
+    "cement": {
+      "max": 540.0,
+      "min": 102.0
+    },
+    "coarse_aggregate": {
+      "max": 1145.0,
+      "min": 801.0
+    },
+    "fine_aggregate": {
+      "max": 992.6,
+      "min": 594.0
+    },
+    "fly_ash": {
+      "max": 200.1,
+      "min": 0.0
+    },
+    "slag": {
+      "max": 359.4,
+      "min": 0.0
+    },
+    "strength_mpa": {
+      "max": 82.6,
+      "min": 2.33
+    },
+    "superplasticizer": {
+      "max": 32.2,
+      "min": 0.0
+    },
+    "water": {
+      "max": 247.0,
+      "min": 121.8
+    }
+  },
+  "repeated_predictor_rows_beyond_first": 38,
+  "rows": 1030,
+  "uci_id": 165
+}

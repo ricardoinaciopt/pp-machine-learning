@@ -1,0 +1,180 @@
+---
+title: "Machine Learning I — Hands-On 10"
+format:
+  pdf: default
+  docx: default
+---
+
+# 10.1 From transactions to itemsets ✎
+
+In association rule mining, the data are often represented as a set of **transactions**. Each transaction contains a set of items. For example, in market basket analysis, each transaction corresponds to one customer purchase, and the items correspond to the products bought together.
+
+Consider the following set of supermarket transactions.
+
+| Transaction ID | Items bought |
+|:---|:---|
+| T1 | Bread, Milk, Butter |
+| T2 | Bread, Milk |
+| T3 | Bread, Eggs |
+| T4 | Milk, Butter |
+| T5 | Bread, Milk, Butter, Eggs |
+| T6 | Bread, Butter |
+| T7 | Milk, Eggs |
+| T8 | Bread, Milk, Butter |
+| T9 | Bread, Milk, Coffee |
+| T10 | Coffee, Eggs |
+
+Use this transaction dataset to compute itemset supports.
+
+The **support** of an itemset $X$ is the proportion of transactions that contain all items in $X$:
+
+$$
+\operatorname{support}(X)=\frac{\#\{t:X\subseteq t\}}{N}.
+$$
+
+1. Compute the support of the following itemsets:
+
+   - $\{\text{Bread}\}$;
+   - $\{\text{Milk}\}$;
+   - $\{\text{Butter}\}$;
+   - $\{\text{Eggs}\}$;
+   - $\{\text{Coffee}\}$.
+
+2. Compute the support of the following itemsets:
+
+   - $\{\text{Bread},\text{Milk}\}$;
+   - $\{\text{Bread},\text{Butter}\}$;
+   - $\{\text{Milk},\text{Butter}\}$;
+   - $\{\text{Bread},\text{Milk},\text{Butter}\}$;
+   - $\{\text{Coffee},\text{Eggs}\}$.
+
+3. Assume a minimum support threshold of
+
+$$
+\operatorname{minsup}=30\%.
+$$
+
+Identify which itemsets from Questions 1 and 2 are **frequent**.
+
+4. Explain why support measures the frequency of an itemset, but does not by itself describe the strength of an implication such as
+
+$$
+\{\text{Bread}\}\rightarrow\{\text{Milk}\}.
+$$
+
+# 10.2 From itemsets to association rules ✎
+
+Frequent itemsets can be used to construct **association rules**. An association rule has the form
+
+$$
+X\rightarrow Y,
+\qquad X\cap Y=\varnothing,
+$$
+
+where $X$ is the antecedent and $Y$ is the consequent.
+
+The support of a rule is the support of the union of the antecedent and consequent:
+
+$$
+\operatorname{support}(X\rightarrow Y)=\operatorname{support}(X\cup Y).
+$$
+
+The **confidence** of a rule is
+
+$$
+\operatorname{confidence}(X\rightarrow Y)
+=\frac{\operatorname{support}(X\cup Y)}{\operatorname{support}(X)}.
+$$
+
+Confidence measures the proportion of transactions containing $X$ that also contain $Y$.
+
+Using the transaction dataset from Exercise 10.1, compute the support and confidence of the following rules.
+
+1. $\{\text{Bread}\}\rightarrow\{\text{Milk}\}$
+
+2. $\{\text{Milk}\}\rightarrow\{\text{Bread}\}$
+
+3. $\{\text{Bread}\}\rightarrow\{\text{Butter}\}$
+
+4. $\{\text{Butter}\}\rightarrow\{\text{Bread}\}$
+
+5. $\{\text{Bread},\text{Milk}\}\rightarrow\{\text{Butter}\}$
+
+6. $\{\text{Coffee}\}\rightarrow\{\text{Eggs}\}$
+
+7. Compare the following two rules:
+
+$$
+\{\text{Bread}\}\rightarrow\{\text{Milk}\},
+\qquad
+\{\text{Milk}\}\rightarrow\{\text{Bread}\}.
+$$
+
+8. Do they have the same support? Do they have the same confidence? Explain why.
+
+# 10.3 Selecting rules using support and confidence ✎
+
+An association-rule mining task usually defines a minimum support and a minimum confidence. The goal is to find rules satisfying **both** thresholds:
+
+$$
+\operatorname{support}(X\rightarrow Y)\geq\operatorname{minsup},
+\qquad
+\operatorname{confidence}(X\rightarrow Y)\geq\operatorname{minconf}.
+$$
+
+This corresponds to the usual problem definition: given a transaction dataset, a minimum support, and a minimum confidence, obtain all rules that satisfy both conditions.
+
+Consider the thresholds
+
+$$
+\operatorname{minsup}=30\%,
+\qquad
+\operatorname{minconf}=70\%.
+$$
+
+Use the rules from Exercise 10.2.
+
+1. For each rule, decide whether it satisfies the minimum support threshold.
+
+2. For each rule, decide whether it satisfies the minimum confidence threshold.
+
+3. Identify which rules are valid association rules under **both** thresholds.
+
+4. Suppose we increase the minimum confidence threshold to
+
+$$
+\operatorname{minconf}=90\%.
+$$
+
+Which rules remain valid?
+
+5. Explain what happens when the minimum confidence threshold becomes stricter.
+
+# 10.4 Why confidence can be misleading ✎
+
+A high-confidence rule is not always interesting. A rule may have high confidence simply because the consequent is already very common.
+
+To evaluate whether a rule is more informative than expected, we can use **lift**:
+
+$$
+\operatorname{lift}(X\rightarrow Y)
+=\frac{\operatorname{confidence}(X\rightarrow Y)}{\operatorname{support}(Y)}.
+$$
+
+- If $\operatorname{lift}>1$, $X$ and $Y$ occur together more often than expected under independence.
+- If $\operatorname{lift}=1$, $X$ and $Y$ are approximately independent.
+- If $\operatorname{lift}<1$, $X$ and $Y$ occur together less often than expected under independence.
+
+Using the transaction dataset from Exercise 10.1:
+
+1. Compute the lift of $\{\text{Bread}\}\rightarrow\{\text{Milk}\}$.
+
+2. Compute the lift of $\{\text{Milk}\}\rightarrow\{\text{Bread}\}$.
+
+3. Compute the lift of $\{\text{Coffee}\}\rightarrow\{\text{Eggs}\}$.
+
+4. Compute the lift of $\{\text{Eggs}\}\rightarrow\{\text{Coffee}\}$.
+
+5. For each rule, state whether the association is positive, approximately independent, or negative.
+
+6. Based on support, confidence, and lift, which of the above rules would you consider the most interesting? Justify your answer. Your answer should make explicit **which notion of interestingness** you are prioritizing: frequency, reliability of implication, or departure from independence.

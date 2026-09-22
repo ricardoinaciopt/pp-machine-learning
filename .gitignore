@@ -1,0 +1,22 @@
+dist/
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+.venv/
+.quarto/
+.DS_Store
+
+# Optional verified downloads; derived HO9 cache is committed.
+data/ho09/raw/
+
+# Optional UCI comparison downloads; verified distributable copies are in data/.
+.local-data/
+
+**/*.quarto_ipynb
+
+# Handout PDF/DOCX files are included alongside their QMD sources.
+# Slide exports remain generated-only.
+/hands-on/**/slides.pptx
+/hands-on/**/slides.pdf
+
+/.quarto/

@@ -1,0 +1,214 @@
+---
+title: "Machine Learning I: Hands-On 6: Worked Solutions"
+---
+
+# Comparing classification performance
+
+These worked solutions follow the same experiments as the HO6 notebook. The numerical values below use the notebook configuration: stratified 10-fold cross-validation with shuffling and `random_state=0`.
+
+# 6.1 Inspect three classification tasks
+
+All three datasets contain 200 observations, two predictors (`X1`, `X2`), and one target (`Class`). Their class counts are:
+
+| Dataset | Class 0 | Class 1 | Class 2 | Total |
+|:---|---:|---:|---:|---:|
+| `ds1` | 67 | 67 | 66 | 200 |
+| `ds2` | 66 | 68 | 66 | 200 |
+| `ds3` | 66 | 66 | 68 | 200 |
+
+The tasks therefore have almost identical class representation.
+
+**Prediction: Should one classifier necessarily perform best on all three tasks?**
+
+No. Dataset size and class counts say very little about the shape of the class regions in feature space. Different learning algorithms impose different assumptions on that geometry.
+
+For example, a linear classifier can perform very well when the classes are separated by approximately linear boundaries, while a local or nonlinear learner can be preferable when the class regions are curved or fragmented.
+
+> **ML insight: balanced classes do not imply an easy problem**
+>
+> Class balance describes how many examples belong to each class. It does not describe overlap, separation, local density, or boundary shape. Those properties determine how well a model family can represent the task.
+
+# 6.2 Evaluate all classifiers using shared cross-validation folds
+
+The notebook evaluates seven classifiers:
+
+- k-NN;
+- decision tree;
+- LDA;
+- Gaussian naive Bayes;
+- linear SVM;
+- polynomial SVM;
+- RBF SVM.
+
+The cross-validation procedure is:
+
+```python
+cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=0)
+```
+
+Scaling for k-NN and SVMs is included inside a pipeline. This is essential because the scaler must be learned only from the training portion of each fold.
+
+For `ds2`, the fold-wise accuracies are:
+
+| Fold | k-NN | Tree | LDA | Naive Bayes | SVM linear | SVM poly | SVM RBF |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 0.85 | 0.90 | 0.90 | 0.90 | 0.90 | 0.90 | 0.90 |
+| 2 | 0.75 | 0.65 | 0.75 | 0.75 | 0.80 | 0.60 | 0.75 |
+| 3 | 0.90 | 0.90 | 0.70 | 0.85 | 0.85 | 0.75 | 0.85 |
+| 4 | 0.80 | 0.85 | 0.80 | 0.70 | 0.80 | 0.70 | 0.75 |
+| 5 | 0.90 | 0.80 | 0.95 | 0.90 | 0.95 | 0.90 | 0.95 |
+| 6 | 0.90 | 0.85 | 0.90 | 0.95 | 0.90 | 0.80 | 0.90 |
+| 7 | 0.95 | 0.80 | 0.85 | 0.95 | 0.95 | 0.90 | 0.95 |
+| 8 | 0.90 | 0.95 | 0.85 | 0.80 | 0.80 | 0.85 | 0.80 |
+| 9 | 0.80 | 0.75 | 0.90 | 0.85 | 0.90 | 0.85 | 0.90 |
+| 10 | 0.90 | 0.85 | 0.85 | 0.85 | 0.80 | 0.80 | 0.85 |
+
+One row contains the accuracies obtained by all seven classifiers on the **same held-out fold**. One column contains the ten held-out scores obtained by one classifier.
+
+Using the same folds makes the comparison more direct because the algorithms are evaluated on matching held-out observations.
+
+**Why fit scaling inside each training fold?**
+
+Suppose the mean and standard deviation used by `StandardScaler` were estimated from all 200 observations before cross-validation. Information from the future test fold would then influence the transformation applied to the training data. The pipeline avoids this leakage by fitting the scaler on each training fold and applying that fitted transformation to its corresponding held-out fold.
+
+# 6.3 Summarise performance and variability
+
+For classifier $j$ with fold scores $a_{1j},\ldots,a_{10j}$, compute
+
+$$
+\bar a_j=\frac{1}{10}\sum_{i=1}^{10}a_{ij}
+$$
+
+and the sample standard deviation
+
+$$
+s_j=\sqrt{\frac{1}{9}\sum_{i=1}^{10}(a_{ij}-\bar a_j)^2}.
+$$
+
+The `ds2` summary is:
+
+| Classifier | Mean accuracy | Standard deviation |
+|:---|---:|---:|
+| k-NN | 0.865 | 0.063 |
+| SVM linear | 0.865 | 0.063 |
+| SVM RBF | 0.860 | 0.074 |
+| Naive Bayes | 0.850 | 0.082 |
+| LDA | 0.845 | 0.076 |
+| Tree | 0.830 | 0.086 |
+| SVM poly | 0.805 | 0.098 |
+
+A useful close comparison is k-NN versus linear SVM. Both have mean accuracy 0.865 and standard deviation approximately 0.063. RBF SVM is also close in mean accuracy at 0.860, but its standard deviation is slightly larger at approximately 0.074.
+
+**What is lost when only the mean is reported?**
+
+The mean does not show how strongly performance changes across held-out samples. A classifier can have a good average score while being much less stable across folds than another classifier with a similar average.
+
+> **ML insight: mean and spread answer different questions**
+>
+> The mean describes the centre of the observed cross-validation scores. The standard deviation describes their spread. Neither quantity should be interpreted in isolation.
+
+# 6.4 Compare the fold-wise score distributions
+
+The boxplot for `ds2` shows considerable overlap among the seven classifiers. The mean ordering therefore does not imply that the same classifier wins on every fold.
+
+The mean accuracies across the three tasks are:
+
+| Classifier | `ds1` | `ds2` | `ds3` |
+|:---|---:|---:|---:|
+| k-NN | 1.000 | 0.865 | 0.860 |
+| Tree | 1.000 | 0.830 | 0.900 |
+| LDA | 1.000 | 0.845 | 0.325 |
+| Naive Bayes | 1.000 | 0.850 | 0.905 |
+| SVM linear | 1.000 | 0.865 | 0.420 |
+| SVM poly | 0.995 | 0.805 | 0.445 |
+| SVM RBF | 1.000 | 0.860 | 0.925 |
+
+Several observations are important.
+
+1. On `ds1`, almost every classifier obtains perfect accuracy. This task provides little evidence for preferring one classifier over another on predictive accuracy alone.
+2. On `ds2`, the classifiers are much closer together and the fold distributions overlap substantially.
+3. On `ds3`, the ordering changes strongly. RBF SVM, naive Bayes, the tree, and k-NN perform well, while LDA and the linear and polynomial SVM configurations perform much worse.
+
+The large changes on `ds3` are evidence that **inductive bias matters**. The same algorithms are being evaluated under the same general protocol, but their ability to represent the class geometry differs.
+
+**Why interpret a small mean difference together with variability?**
+
+A difference such as 0.865 versus 0.860 is small relative to the observed fold-to-fold spread. It should therefore be described as a small observed difference under this evaluation, rather than as strong evidence that one learner is intrinsically superior.
+
+The ten folds are useful for estimating performance and observing variation, but their training sets overlap. They are not ten independent experimental replications.
+
+# 6.5 Compare algorithms across ten tasks
+
+The notebook loads the precomputed task-level results with:
+
+```python
+from mlcourse.labs import load_task_results
+
+task_means = load_task_results()
+```
+
+The mean-accuracy table is:
+
+| Task | k-NN | Tree | LDA | Naive Bayes | SVM linear | SVM poly | SVM RBF |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| 2 | 0.880 | 0.820 | 0.845 | 0.860 | 0.845 | 0.835 | 0.865 |
+| 3 | 0.875 | 0.875 | 0.305 | 0.920 | 0.340 | 0.390 | 0.930 |
+| 4 | 0.895 | 0.890 | 0.910 | 0.890 | 0.920 | 0.880 | 0.925 |
+| 5 | 0.880 | 0.820 | 0.845 | 0.860 | 0.845 | 0.835 | 0.865 |
+| 6 | 0.875 | 0.870 | 0.305 | 0.920 | 0.340 | 0.390 | 0.930 |
+| 7 | 0.935 | 0.875 | 0.910 | 0.910 | 0.915 | 0.855 | 0.915 |
+| 8 | 0.890 | 0.880 | 0.910 | 0.905 | 0.905 | 0.880 | 0.905 |
+| 9 | 0.960 | 0.920 | 0.915 | 0.935 | 0.940 | 0.915 | 0.950 |
+| 10 | 0.950 | 0.920 | 0.955 | 0.955 | 0.945 | 0.920 | 0.945 |
+
+Ranking each row from best to worst gives several useful examples:
+
+- Task 1 is a complete tie, so all seven algorithms receive average rank 4.
+- k-NN ranks first on Task 2.
+- RBF SVM ranks first on Task 3.
+- LDA and naive Bayes tie for the best accuracy on Task 10.
+
+Ranks and raw accuracies answer related but different questions. Accuracy preserves the size of a performance difference, while ranks preserve only the ordering within each task. A difference of 0.001 and a difference of 0.200 can both correspond to adjacent ranks.
+
+**What changes when one row represents an entire dataset?**
+
+The unit of analysis is now the learning task. Each dataset contributes one summary performance for each algorithm. This is fundamentally different from treating individual cross-validation folds as separate tasks.
+
+# 6.6 Average ranks and the Friedman test
+
+For each classifier, average its ranks over the ten tasks. The resulting values are:
+
+| Classifier | Average rank |
+|:---|---:|
+| SVM RBF | 2.30 |
+| k-NN | 2.65 |
+| Naive Bayes | 3.30 |
+| SVM linear | 4.00 |
+| LDA | 4.35 |
+| Tree | 5.45 |
+| SVM poly | 5.95 |
+
+Lower is better, so RBF SVM has the best observed average rank, followed by k-NN and naive Bayes.
+
+The Friedman test gives
+
+$$
+\chi_F^2 \approx 27.502,
+\qquad
+p \approx 0.000117.
+$$
+
+At $\alpha=0.05$, the p-value is below the significance threshold, so the null hypothesis of equivalent algorithm performance across these tasks is rejected under the test assumptions.
+
+**Does the best average rank imply that RBF SVM wins every task?**
+
+No. The rank table shows different winners and several ties. Average rank summarizes behavior across the collection. It is not a statement that one algorithm dominates every individual dataset.
+
+**What does the omnibus result establish?**
+
+The Friedman test provides evidence that the seven algorithms do not all behave equivalently across the ten tasks. It does not identify which particular pairs differ. A pairwise post-hoc analysis would be required to address that question, and these ten datasets still do not justify a claim of universal superiority.
+
+> **ML insight: one task and many tasks support different conclusions**
+>
+> Within one dataset, cross-validation estimates predictive performance and its sensitivity to resampling. Across datasets, the analysis asks whether algorithms tend to rank differently over distinct learning problems. The latter supports conclusions about algorithm behaviour across tasks, not about one fitted model on one dataset.

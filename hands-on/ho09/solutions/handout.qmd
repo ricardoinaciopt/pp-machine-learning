@@ -1,0 +1,206 @@
+---
+title: "Machine Learning I: Hands-On 9 - Worked Solutions"
+---
+
+# 9.1 From ordinary datasets to meta-features: Worked Solution
+
+The original table describes five complete classification datasets:
+
+| Dataset | Class 0 examples | Class 1 examples | Raw features | Numeric features | Missing values | Total values |
+|:---|---:|---:|---:|---:|---:|---:|
+| D1 | 10 | 10 | 2 | 2 | 0 | 40 |
+| D2 | 18 | 2 | 3 | 3 | 0 | 60 |
+| D3 | 6 | 4 | 10 | 10 | 5 | 100 |
+| D4 | 14 | 6 | 5 | 2 | 4 | 100 |
+| D5 | 8 | 8 | 4 | 3 | 8 | 64 |
+
+The objective is to convert these dataset-level summaries into meta-features. Each row of the final table will describe an **entire dataset**, not an individual observation.
+
+## 1. Basic dataset-level meta-features
+
+For the number of instances, add the two class counts. For the ratios, use
+
+$$
+\text{Numeric Ratio}=\frac{\text{Numeric features}}{\text{Raw features}},
+\qquad
+\text{Missing Rate}=\frac{\text{Missing values}}{\text{Total values}}.
+$$
+
+| Dataset | Number of instances | Number of raw features | Numeric feature ratio | Missing value rate |
+|:---|:---|---:|:---|:---|
+| D1 | $10+10=20$ | 2 | $2/2=1.00$ | $0/40=0.000$ |
+| D2 | $18+2=20$ | 3 | $3/3=1.00$ | $0/60=0.000$ |
+| D3 | $6+4=10$ | 10 | $10/10=1.00$ | $5/100=0.050$ |
+| D4 | $14+6=20$ | 5 | $2/5=0.400$ | $4/100=0.040$ |
+| D5 | $8+8=16$ | 4 | $3/4=0.750$ | $8/64=0.125$ |
+
+## 2. Class-distribution meta-features
+
+For each dataset,
+
+$$
+\text{Majority proportion}=\frac{\max(n_0,n_1)}{n_0+n_1},
+$$
+
+$$
+\text{Minority proportion}=\frac{\min(n_0,n_1)}{n_0+n_1},
+$$
+
+and
+
+$$
+\text{Imbalance ratio}=\frac{\text{Majority proportion}}{\text{Minority proportion}}.
+$$
+
+| Dataset | Majority class proportion | Minority class proportion | Imbalance ratio |
+|:---|:---|:---|:---|
+| D1 | $10/20=0.50$ | $10/20=0.50$ | $0.50/0.50=1.00$ |
+| D2 | $18/20=0.90$ | $2/20=0.10$ | $0.90/0.10=9.00$ |
+| D3 | $6/10=0.60$ | $4/10=0.40$ | $0.60/0.40=1.50$ |
+| D4 | $14/20=0.70$ | $6/20=0.30$ | $0.70/0.30\approx2.33$ |
+| D5 | $8/16=0.50$ | $8/16=0.50$ | $0.50/0.50=1.00$ |
+
+## 3. Final meta-dataset
+
+Combining the previous calculations gives:
+
+| Dataset | Instances | Raw features | Numeric ratio | Missing rate | Majority prop. | Minority prop. | Imbalance ratio |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| D1 | 20 | 2 | 1.00 | 0.000 | 0.50 | 0.50 | 1.00 |
+| D2 | 20 | 3 | 1.00 | 0.000 | 0.90 | 0.10 | 9.00 |
+| D3 | 10 | 10 | 1.00 | 0.050 | 0.60 | 0.40 | 1.50 |
+| D4 | 20 | 5 | 0.400 | 0.040 | 0.70 | 0.30 | 2.33 |
+| D5 | 16 | 4 | 0.750 | 0.125 | 0.50 | 0.50 | 1.00 |
+
+## 4. Why is this a meta-dataset?
+
+This is a meta-dataset because each row represents one complete dataset: D1, D2, D3, D4, or D5. The columns are not ordinary predictor variables measured for individual examples. They are **meta-features** that summarize properties of complete learning problems, such as sample size, dimensionality, missingness, and class imbalance.
+
+In an ordinary classification dataset, a row might describe one patient, image, transaction, or other instance. Here, a row describes an entire classification problem.
+
+## 5. Which datasets might be more difficult for a simple classifier?
+
+Based only on the supplied meta-features, D2 and D3 are reasonable candidates.
+
+- **D2:** strong class imbalance. The majority-class proportion is $0.90$, the minority-class proportion is $0.10$, and the imbalance ratio is $9.00$. A classifier can therefore achieve apparently high accuracy while performing poorly on the minority class.
+- **D3:** high dimensionality relative to its small sample size, together with missing values. It has 10 instances and 10 raw features, giving a feature-to-instance ratio of $1$, and its missing-value rate is $0.05$.
+
+> **ML insight: meta-features are evidence, not performance**
+>
+> A meta-feature describes properties of a task. It can help explain or predict algorithm behaviour across tasks, but it does not directly measure how well a particular model will generalize on that task.
+
+# 9.2 Meta-learning for algorithm selection: Worked Solution
+
+A full decision tree and a decision stump were evaluated on six datasets:
+
+| Dataset | Complexity | Imbalance | Missingness | Accuracy_DT | Accuracy_DS |
+|:---|---:|---:|---:|---:|---:|
+| D1 | 0.10 | 0.00 | 0.00 | 0.90 | 0.80 |
+| D2 | 0.15 | 0.90 | 0.00 | 0.80 | 0.90 |
+| D3 | 0.90 | 0.20 | 0.10 | 0.60 | 0.70 |
+| D4 | 0.10 | 0.00 | 0.00 | 0.95 | 0.65 |
+| D5 | 0.30 | 0.20 | 0.05 | 0.85 | 0.75 |
+| D6 | 0.25 | 0.00 | 0.15 | 0.75 | 0.75 |
+
+## 1-2. Accuracy gaps and best model
+
+For every dataset,
+
+$$
+\text{Accuracy\_Gap}=\text{Accuracy\_DT}-\text{Accuracy\_DS}.
+$$
+
+| Dataset | Accuracy_DT | Accuracy_DS | Calculation | Gap | Best model |
+|:---|---:|---:|:---|---:|:---|
+| D1 | 0.90 | 0.80 | $0.90-0.80$ | 0.10 | Full decision tree |
+| D2 | 0.80 | 0.90 | $0.80-0.90$ | -0.10 | Decision stump |
+| D3 | 0.60 | 0.70 | $0.60-0.70$ | -0.10 | Decision stump |
+| D4 | 0.95 | 0.65 | $0.95-0.65$ | 0.30 | Full decision tree |
+| D5 | 0.85 | 0.75 | $0.85-0.75$ | 0.10 | Full decision tree |
+| D6 | 0.75 | 0.75 | $0.75-0.75$ | 0.00 | Tie |
+
+The sign of the gap tells us which learner performed better on each previous task. Those observed outcomes become the **meta-level labels** used for algorithm selection.
+
+## 3. Distances from the query dataset
+
+The query is
+
+$$
+Q=(0.12,0.05,0.00).
+$$
+
+Using Manhattan distance,
+
+$$
+d(Q,D_i)=|C_Q-C_i|+|I_Q-I_i|+|M_Q-M_i|.
+$$
+
+The calculations are:
+
+| Dataset | Meta-features | Calculation | Distance |
+|:---|:---|:---|---:|
+| D1 | $(0.10,0.00,0.00)$ | $|0.12-0.10|+|0.05-0.00|+|0.00-0.00|=0.02+0.05+0.00$ | 0.07 |
+| D2 | $(0.15,0.90,0.00)$ | $|0.12-0.15|+|0.05-0.90|+|0.00-0.00|=0.03+0.85+0.00$ | 0.88 |
+| D3 | $(0.90,0.20,0.10)$ | $|0.12-0.90|+|0.05-0.20|+|0.00-0.10|=0.78+0.15+0.10$ | 1.03 |
+| D4 | $(0.10,0.00,0.00)$ | $|0.12-0.10|+|0.05-0.00|+|0.00-0.00|=0.02+0.05+0.00$ | 0.07 |
+| D5 | $(0.30,0.20,0.05)$ | $|0.12-0.30|+|0.05-0.20|+|0.00-0.05|=0.18+0.15+0.05$ | 0.38 |
+| D6 | $(0.25,0.00,0.15)$ | $|0.12-0.25|+|0.05-0.00|+|0.00-0.15|=0.13+0.05+0.15$ | 0.33 |
+
+Sorting from closest to farthest gives:
+
+| Order | Dataset | Distance | Best model on that dataset |
+|---:|:---|---:|:---|
+| 1 | D1 | 0.07 | Full decision tree |
+| 1 | D4 | 0.07 | Full decision tree |
+| 3 | D6 | 0.33 | Tie |
+| 4 | D5 | 0.38 | Full decision tree |
+| 5 | D2 | 0.88 | Decision stump |
+| 6 | D3 | 1.03 | Decision stump |
+
+D1 and D4 are tied as the closest datasets because they have identical meta-features $(0.10,0.00,0.00)$.
+
+## 4. 1-nearest-neighbor recommendation
+
+The nearest distance is $0.07$, attained by both D1 and D4. Both have the same meta-level label: **Full decision tree**.
+
+Therefore, even though there is a distance tie, the recommendation is unambiguous:
+
+$$
+\boxed{\text{Recommend the full decision tree.}}
+$$
+
+## 5. 3-nearest-neighbor recommendation
+
+The three closest datasets are:
+
+| Neighbor | Distance to $Q$ | Best model |
+|:---|---:|:---|
+| D1 | 0.07 | Full decision tree |
+| D4 | 0.07 | Full decision tree |
+| D6 | 0.33 | Tie |
+
+The vote is therefore:
+
+- Full decision tree: 2 votes;
+- Decision stump: 0 votes;
+- Tie / stump-or-tie: 1 vote.
+
+The majority vote selects
+
+$$
+\boxed{\text{Full decision tree.}}
+$$
+
+## 6. Why is this meta-learning?
+
+This is a meta-learning problem because the examples are **datasets**, not ordinary observations.
+
+- **Examples:** D1, D2, D3, D4, D5, and D6.
+- **Predictors:** dataset-level meta-features such as Complexity, Imbalance, and Missingness.
+- **Target:** the algorithm recommendation for the dataset - full decision tree, decision stump, or tie.
+
+The goal is therefore is to use experience from previous learning tasks to recommend a learning strategy for a new task.
+
+> **ML insight: algorithm selection is itself a learning problem**
+>
+> The recommendation is only as reliable as the previous tasks used to construct the meta-dataset. A small or unrepresentative collection of datasets can produce a poor recommendation even when the meta-level learner is applied correctly.

@@ -1,0 +1,119 @@
+---
+title: "Machine Learning I: Hands-On 9"
+---
+
+# 9.1 From ordinary datasets to meta-features
+
+In ordinary supervised learning, each row usually represents one observation. In meta-learning, each row can represent an entire dataset or learning problem.
+
+Consider the following five classification datasets. For each dataset, the table gives summary information about the original data.
+
+| Dataset | Class 0 examples | Class 1 examples | Raw features | Numeric features | Missing values | Total values |
+|:---|---:|---:|---:|---:|---:|---:|
+| D1 | 10 | 10 | 2 | 2 | 0 | 40 |
+| D2 | 18 | 2 | 3 | 3 | 0 | 60 |
+| D3 | 6 | 4 | 10 | 10 | 5 | 100 |
+| D4 | 14 | 6 | 5 | 2 | 4 | 100 |
+| D5 | 8 | 8 | 4 | 3 | 8 | 64 |
+
+Use the table to construct simple meta-features for each dataset.
+
+1. For each dataset, compute the following meta-features:
+
+   - number of instances;
+   - number of raw features;
+   - numeric feature ratio;
+   - missing value rate.
+
+Use
+
+$$
+\text{Numeric Ratio}=\frac{\text{Number of numeric features}}{\text{Number of raw features}},
+$$
+
+$$
+\text{Missing Rate}=\frac{\text{Number of missing values}}{\text{Total number of feature values}}.
+$$
+
+2. For each dataset, compute the following class-distribution meta-features:
+
+   - majority class proportion;
+   - minority class proportion;
+   - imbalance ratio.
+
+Use
+
+$$
+\text{Majority proportion}=\frac{\max(n_0,n_1)}{n_0+n_1},
+$$
+
+$$
+\text{Minority proportion}=\frac{\min(n_0,n_1)}{n_0+n_1},
+$$
+
+$$
+\text{Imbalance ratio}=\frac{\text{Majority proportion}}{\text{Minority proportion}}.
+$$
+
+3. Build a **meta-dataset** where each row corresponds to one of the five datasets and each column corresponds to one of the meta-features computed above.
+
+4. Explain why this table is a meta-dataset. In your answer, clarify what the rows represent and how this differs from an ordinary supervised-learning dataset.
+
+5. Based only on the meta-features, identify which two datasets you would expect to be more difficult for a simple classifier. Justify your answer using class imbalance, dimensionality, and missing values.
+
+# 9.2 Meta-learning for algorithm selection
+
+A full decision tree and a decision stump were evaluated on six classification datasets. A **decision stump** is a decision tree with maximum depth $1$.
+
+The table below presents three normalized meta-features for each dataset, along with the test accuracy obtained by both algorithms.
+
+| Dataset | Complexity | Imbalance | Missingness | Accuracy_DT | Accuracy_DS |
+|:---|---:|---:|---:|---:|---:|
+| D1 | 0.10 | 0.00 | 0.00 | 0.90 | 0.80 |
+| D2 | 0.15 | 0.90 | 0.00 | 0.80 | 0.90 |
+| D3 | 0.90 | 0.20 | 0.10 | 0.60 | 0.70 |
+| D4 | 0.10 | 0.00 | 0.00 | 0.95 | 0.65 |
+| D5 | 0.30 | 0.20 | 0.05 | 0.85 | 0.75 |
+| D6 | 0.25 | 0.00 | 0.15 | 0.75 | 0.75 |
+
+Here, **Accuracy_DT** is the accuracy of the full decision tree, and **Accuracy_DS** is the accuracy of the decision stump.
+
+1. For each dataset, compute the accuracy gap:
+
+$$
+\text{Accuracy\_Gap}=\text{Accuracy\_DT}-\text{Accuracy\_DS}.
+$$
+
+2. Based on the accuracy gap, identify the best model for each dataset. Use the following rule:
+
+   - if the gap is positive, the best model is the full decision tree;
+   - if the gap is negative, the best model is the decision stump;
+   - if the gap is zero, the result is a tie.
+
+3. Consider a new query dataset $Q$ with the following meta-features:
+
+$$
+Q=(\text{Complexity}=0.12,\ \text{Imbalance}=0.05,\ \text{Missingness}=0.00).
+$$
+
+Compute the Manhattan distance between $Q$ and each of the six datasets D1-D6 using
+
+$$
+d(Q,D_i)=|C_Q-C_i|+|I_Q-I_i|+|M_Q-M_i|,
+$$
+
+where $C$ is complexity, $I$ is imbalance, and $M$ is missingness.
+
+4. Using **1-nearest-neighbor meta-learning**, recommend either the full decision tree or the decision stump for the query dataset $Q$.
+
+5. Using **3-nearest-neighbor meta-learning**, recommend either the full decision tree or the decision stump for the query dataset $Q$ by majority vote among the three closest datasets. In case of a tie, use the label *Decision stump or tie*.
+
+6. Explain why this is a meta-learning problem rather than an ordinary classification problem. Your explanation should include:
+
+   - what counts as an example;
+   - what counts as a predictor;
+   - what the target represents.
+
+> **Conceptual focus**
+>
+> The unit of analysis has changed. The examples are now complete learning problems, the predictors describe those problems, and the target can represent which learning algorithm performed best. Meta-learning therefore learns *about learning tasks* rather than directly classifying their original observations.

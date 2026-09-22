@@ -1,0 +1,83 @@
+% AC1 handout visual system: restrained, print-friendly and reusable.
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{microtype}
+\usepackage[a4paper,top=19mm,bottom=20mm,left=22mm,right=22mm]{geometry}
+\usepackage{xcolor}
+\definecolor{ac1accent}{HTML}{315A7D}
+\definecolor{ac1text}{HTML}{20262D}
+\definecolor{ac1muted}{HTML}{66717C}
+\definecolor{ac1rule}{HTML}{C8D0D8}
+\definecolor{ac1note}{HTML}{F4F7F9}
+
+\color{ac1text}
+\AtBeginDocument{\fontsize{10.5pt}{12.4pt}\selectfont}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.48em plus 0.10em minus 0.06em}
+\linespread{1.035}
+\raggedbottom
+\emergencystretch=2.5em
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{ac1text}}
+  {}{0pt}{}
+  [\vspace{0.15em}\color{ac1rule}\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{ac1text}}
+  {}{0pt}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{ac1text}}
+  {}{0pt}{}
+\titlespacing*{\section}{0pt}{1.45em}{0.70em}
+\titlespacing*{\subsection}{0pt}{1.20em}{0.45em}
+\titlespacing*{\subsubsection}{0pt}{1.00em}{0.35em}
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.55em,topsep=0.35em,itemsep=0.15em,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.65em,topsep=0.35em,itemsep=0.20em,parsep=0pt}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{5.2pt}
+\setlength{\LTpre}{0.55em}
+\setlength{\LTpost}{0.75em}
+
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,textfont=it,skip=5pt}
+
+\usepackage{graphicx}
+\setkeys{Gin}{keepaspectratio}
+
+\usepackage[most]{tcolorbox}
+\renewenvironment{quote}
+{\begin{tcolorbox}[
+  enhanced,
+  breakable,
+  colback=ac1note,
+  colframe=ac1rule,
+  boxrule=0pt,
+  borderline west={2pt}{0pt}{ac1accent},
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  before skip=0.75em,after skip=0.85em,
+  arc=1pt,
+  fontupper=\small
+]}
+{\end{tcolorbox}}
+
+\usepackage{needspace}
+
+\makeatletter
+\renewcommand{\maketitle}{%
+  \begin{flushleft}
+    {\LARGE\bfseries\color{ac1text}\@title\par}
+    \vspace{0.38em}
+    {\color{ac1accent}\rule{\textwidth}{0.8pt}}
+  \end{flushleft}
+  \vspace{0.65em}
+}
+\makeatother

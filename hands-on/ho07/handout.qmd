@@ -1,0 +1,34 @@
+---
+title: "Machine Learning I: Hands-On 7"
+---
+
+# 7.1 Clustering Algorithms
+
+Consider a dataset composed of instances described by two numerical attributes, $A_1$ and $A_2$.
+
+| Point | $A_1$ | $A_2$ |
+|:---|---:|---:|
+| $p_1$ | 4 | 4 |
+| $p_2$ | 0 | 2 |
+| $p_3$ | 4 | 3 |
+| $p_4$ | 0 | 0 |
+| $p_5$ | 5 | 4 |
+| $p_6$ | 1 | 1 |
+| $p_7$ | 2 | 0 |
+| $p_8$ | 5 | 5 |
+
+Using the **Manhattan distance**, apply the following clustering algorithms to partition the data:
+
+$$
+d_1(\mathbf{x},\mathbf{z})=\sum_j |x_j-z_j|.
+$$
+
+1. Apply **K-means** with $k=2$, using $p_1$ and $p_6$ as the initial centroids. Determine the final cluster assignments and the final centroids.
+
+2. Apply **DBSCAN** with $\mathrm{MinPts}=2$ and $\varepsilon=1$. Classify each point as **core**, **border**, or **noise**.
+
+3. Apply **Hierarchical Agglomerative Clustering** with **single-link** merging. Show all merging steps and construct the corresponding dendrogram.
+
+> **What to pay attention to**
+>
+> The three algorithms use different definitions of cluster structure. K-means relies on proximity to representatives, DBSCAN relies on local density, and single-link hierarchical clustering relies on pairwise connectivity. Compare not only the final clusters, but also *why* each algorithm creates them.
