@@ -47,7 +47,9 @@ def validate_notebooks(root=ROOT):
                 book = nbformat.read(path, as_version=4)
                 nbformat.validate(book)
             except Exception as error:
-                errors.append(f"{path.relative_to(root)}: invalid or missing notebook: {error}")
+                errors.append(
+                    f"{path.relative_to(root)}: invalid or missing notebook: {error}"
+                )
                 continue
             label = str(path.relative_to(root))
             check(path.stat().st_size < 1500000, f"{label}: oversized notebook")
@@ -61,7 +63,10 @@ def validate_notebooks(root=ROOT):
                     == ["task", "experiment", "response"],
                     f"{label}: broken experiment sequence",
                 )
-                check("**Prediction:**" in cell.source, f"{label}: missing prediction space")
+                check(
+                    "**Prediction:**" in cell.source,
+                    f"{label}: missing prediction space",
+                )
                 if len(block) == 3:
                     check(
                         all(
@@ -137,7 +142,10 @@ def validate_notebooks(root=ROOT):
                         errors.append(f"{location}: Python syntax error: {error.msg}")
                         continue
                     if any(
-                        (isinstance(node, (ast.FunctionDef, ast.ClassDef)) for node in tree.body)
+                        (
+                            isinstance(node, (ast.FunctionDef, ast.ClassDef))
+                            for node in tree.body
+                        )
                     ):
                         check(
                             cell.metadata.get("jupyter", {}).get("source_hidden"),
@@ -151,14 +159,21 @@ def validate_notebooks(root=ROOT):
                     for line in source.splitlines():
                         check(
                             not re.match(
-                                "\\s*#\\s*(?:import |from \\w+ import |print\\(|\\w+\\s*=)", line
+                                "\\s*#\\s*(?:import |from \\w+ import |print\\(|\\w+\\s*=)",
+                                line,
                             ),
                             f"{location}: commented executable code",
                         )
                     for output in cell.get("outputs", []):
                         images += "image/png" in output.get("data", {})
-                        check(output.output_type != "error", f"{location}: stored execution error")
-                    check(solution or not cell.get("outputs"), f"{location}: stored student output")
+                        check(
+                            output.output_type != "error",
+                            f"{location}: stored execution error",
+                        )
+                    check(
+                        solution or not cell.get("outputs"),
+                        f"{location}: stored student output",
+                    )
                     if cell.metadata.get("role") in ("setup", "bootstrap"):
                         check(
                             cell.metadata.get("jupyter", {}).get("source_hidden"),
@@ -180,11 +195,17 @@ def validate_meta_dataset(root=ROOT):
     with (folder / "meta_dataset.csv").open() as file:
         rows = list(csv.DictReader(file))
     provenance = json.loads((folder / "meta_dataset.provenance.json").read_text())
-    require(len(manifest) == len(rows) == provenance["row_count"] == 12, "Expected twelve rows")
+    require(
+        len(manifest) == len(rows) == provenance["row_count"] == 12,
+        "Expected twelve rows",
+    )
     ids = [int(row["openml_id"]) for row in manifest]
     require(ids == sorted(set(ids)), "IDs must be unique and ordered")
     require([int(row["OpenMLID"]) for row in rows] == ids, "Dataset IDs differ")
-    require([row["Dataset"] for row in rows] == [row["name"] for row in manifest], "Names differ")
+    require(
+        [row["Dataset"] for row in rows] == [row["name"] for row in manifest],
+        "Names differ",
+    )
     for field, path in [
         ("manifest_sha256", folder / "openml_datasets.csv"),
         ("meta_dataset_sha256", folder / "meta_dataset.csv"),
@@ -192,32 +213,54 @@ def validate_meta_dataset(root=ROOT):
     ]:
         require(provenance[field] == digest(path), f"Cache hash mismatch: {field}")
     for entry, row in zip(manifest, rows):
-        require(len(entry["sha256"]) == 64 and entry["reason_for_inclusion"], "Incomplete manifest")
-        n, train, test = (int(row[k]) for k in ["NInstances", "NTrain", "NTest"])
-        require(n == int(entry["n_instances"]) == train + test, "Partition sizes differ")
-        require(test == math.ceil(n * provenance["protocol"]["test_size"]), "Wrong test size")
-        require(float(row["mf_n_instances"]) == train, "Meta-features must describe training data")
         require(
-            float(row["mf_n_features_raw"]) == int(entry["n_features"]), "Feature count differs"
+            len(entry["sha256"]) == 64 and entry["reason_for_inclusion"],
+            "Incomplete manifest",
         )
-        require(float(row["mf_n_classes"]) == int(entry["n_classes"]), "Class count differs")
+        n, train, test = (int(row[k]) for k in ["NInstances", "NTrain", "NTest"])
         require(
-            all((math.isfinite(float(v)) for k, v in row.items() if k.startswith("mf_"))),
+            n == int(entry["n_instances"]) == train + test, "Partition sizes differ"
+        )
+        require(
+            test == math.ceil(n * provenance["protocol"]["test_size"]),
+            "Wrong test size",
+        )
+        require(
+            float(row["mf_n_instances"]) == train,
+            "Meta-features must describe training data",
+        )
+        require(
+            float(row["mf_n_features_raw"]) == int(entry["n_features"]),
+            "Feature count differs",
+        )
+        require(
+            float(row["mf_n_classes"]) == int(entry["n_classes"]), "Class count differs"
+        )
+        require(
+            all(
+                (math.isfinite(float(v)) for k, v in row.items() if k.startswith("mf_"))
+            ),
             "Non-finite feature",
         )
         for label in ["DT", "DS"]:
             correct = int(row["Correct" + label])
             require(0 <= correct <= test, "Invalid correct count")
             require(
-                math.isclose(float(row["Accuracy" + label]), correct / test, abs_tol=1e-10),
+                math.isclose(
+                    float(row["Accuracy" + label]), correct / test, abs_tol=1e-10
+                ),
                 "Wrong accuracy",
             )
         gap = (int(row["CorrectDT"]) - int(row["CorrectDS"])) / test
         require(
-            math.isclose(float(row["AccuracyGap_DT_minus_DS"]), gap, abs_tol=1e-10), "Wrong gap"
+            math.isclose(float(row["AccuracyGap_DT_minus_DS"]), gap, abs_tol=1e-10),
+            "Wrong gap",
         )
         require(int(row["BestModelBinary"]) == int(gap > 0), "Wrong binary label")
-        require(int(row["Best"]) == (-1 if gap > 0 else 1 if gap < 0 else 0), "Wrong ternary label")
+        require(
+            int(row["Best"]) == (-1 if gap > 0 else 1 if gap < 0 else 0),
+            "Wrong ternary label",
+        )
         require(
             row["BestModel"]
             == ("Decision tree" if gap > 0 else "Decision stump" if gap < 0 else "Tie"),
@@ -231,18 +274,25 @@ def validate_meta_dataset(root=ROOT):
 def validate_uci_data(root=ROOT):
     root = Path(root)
     manifest = json.loads((root / "data/uci_sources.json").read_text())
-    require([s["uci_id"] for s in manifest["datasets"]] == [165, 292], "Wrong UCI source set")
+    require(
+        [s["uci_id"] for s in manifest["datasets"]] == [165, 292],
+        "Wrong UCI source set",
+    )
     for spec in manifest["datasets"]:
         require(
             spec["license"] == "CC BY 4.0" and spec["citation"] and spec["changes"],
             "Missing attribution",
         )
         require(
-            len(spec["source_sha256"]) == len(spec["normalised_sha256"]) == 64, "Missing hashes"
+            len(spec["source_sha256"]) == len(spec["normalised_sha256"]) == 64,
+            "Missing hashes",
         )
-        inspection = json.loads((root / "data" / spec["folder"] / "inspection.json").read_text())
+        inspection = json.loads(
+            (root / "data" / spec["folder"] / "inspection.json").read_text()
+        )
         require(
-            inspection["rows"] == spec["rows"] and inspection["columns"] == spec["columns"],
+            inspection["rows"] == spec["rows"]
+            and inspection["columns"] == spec["columns"],
             "Inspection mismatch",
         )
         require(
@@ -254,7 +304,8 @@ def validate_uci_data(root=ROOT):
             if not path.exists():
                 continue
             require(
-                hashlib.sha256(path.read_bytes()).hexdigest() == spec["normalised_sha256"],
+                hashlib.sha256(path.read_bytes()).hexdigest()
+                == spec["normalised_sha256"],
                 f"Snapshot checksum mismatch: {path}",
             )
             with path.open() as file:
@@ -280,11 +331,17 @@ def validate_supplied_data(root=ROOT):
     require((root / "data/ho03/Iris.csv").is_file(), "Missing Iris data")
     with zipfile.ZipFile(root / "data/ho06/results.zip") as archive:
         require(archive.testzip() is None, "Corrupt supplied results archive")
-        require(any(name.endswith(".csv") for name in archive.namelist()), "Empty results archive")
+        require(
+            any(name.endswith(".csv") for name in archive.namelist()),
+            "Empty results archive",
+        )
     legacy = json.loads((root / "data/legacy_provenance.json").read_text())
     for entry in [legacy["hotel_reservations"], *legacy["synthetic_datasets"]]:
         path = root / entry["file"]
-        require(digest(path) == entry["sha256"], f"Snapshot checksum mismatch: {entry['file']}")
+        require(
+            digest(path) == entry["sha256"],
+            f"Snapshot checksum mismatch: {entry['file']}",
+        )
         with path.open() as file:
             reader = csv.DictReader(file)
             rows = list(reader)
@@ -301,7 +358,9 @@ def validate_sources(root=ROOT):
         if not path.is_file() or ignored.intersection(path.relative_to(root).parts):
             continue
         name = str(path.relative_to(root))
-        if any(part in path.name.lower() for part in ["copy of", "_old", "_back", "(1)"]):
+        if any(
+            part in path.name.lower() for part in ["copy of", "_old", "_back", "(1)"]
+        ):
             errors.append(f"Archive-style filename: {name}")
         if path.suffix in {".md", ".qmd", ".py", ".yml", ".yaml", ".txt", ".csv"}:
             text = path.read_text(errors="replace")
@@ -343,26 +402,40 @@ def validate(root=ROOT):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--full', action='store_true',
-                        help='Also run unit tests and all notebooks locally and with simulated Colab setup.')
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Also run unit tests and all notebooks locally and with simulated Colab setup.",
+    )
     args = parser.parse_args(argv)
     errors = validate()
     if errors:
-        parser.exit(1, '\n'.join('ERROR: ' + error for error in errors) + '\n')
-    print('Validated notebook pairs, supplied data, provenance and handout image references.', flush=True)
+        parser.exit(1, "\n".join("ERROR: " + error for error in errors) + "\n")
+    print(
+        "Validated notebook pairs, supplied data, provenance and handout image references.",
+        flush=True,
+    )
     if args.full:
         commands = [
-            [sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-v'],
-            [sys.executable, str(ROOT / 'scripts/check_notebooks.py')],
-            [sys.executable, str(ROOT / 'scripts/check_notebooks.py'), '--simulate-colab'],
+            [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+            [sys.executable, str(ROOT / "scripts/check_notebooks.py")],
+            [
+                sys.executable,
+                str(ROOT / "scripts/check_notebooks.py"),
+                "--simulate-colab",
+            ],
         ]
         try:
             for command in commands:
                 subprocess.run(command, cwd=ROOT, check=True)
         except subprocess.CalledProcessError as error:
-            parser.exit(error.returncode, 'Full validation stopped because a check failed.\n')
-        print('Full validation passed. Simulated Colab checks do not test the hosted service.')
+            parser.exit(
+                error.returncode, "Full validation stopped because a check failed.\n"
+            )
+        print(
+            "Full validation passed. Simulated Colab checks do not test the hosted service."
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

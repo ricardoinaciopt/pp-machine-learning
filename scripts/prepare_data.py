@@ -1,4 +1,4 @@
-"""Explicitly reproduce teaching datasets; ordinary notebooks use supplied data."""
+"""Explicitly reproduce teaching datasets (notebooks use supplied data)."""
 
 import argparse
 from pathlib import Path
@@ -22,10 +22,13 @@ def prepare(datasets, destination, raw_dir, refresh=False, root=ROOT):
         if ids:
             fetch_datasets(root, output_dir=staged, dataset_ids=ids)
         if "meta-learning" in datasets:
-            rebuild_meta_dataset(root, raw_dir=raw_dir, output_dir=staged / "ho09", refresh=refresh)
+            rebuild_meta_dataset(
+                root, raw_dir=raw_dir, output_dir=staged / "ho09", refresh=refresh
+            )
         # Publish provenance last so an interrupted file pair fails integrity checks.
         files = sorted(
-            staged.rglob("*"), key=lambda p: (p.name.endswith(".provenance.json"), str(p))
+            staged.rglob("*"),
+            key=lambda p: (p.name.endswith(".provenance.json"), str(p)),
         )
         for source in files:
             if not source.is_file():
@@ -53,13 +56,17 @@ def main(argv=None):
     )
     destination = parser.add_mutually_exclusive_group()
     destination.add_argument(
-        "--output-dir", type=Path, help="Comparison data root; defaults to .local-data/."
+        "--output-dir",
+        type=Path,
+        help="Comparison data root; defaults to .local-data/.",
     )
     destination.add_argument(
         "--publish", action="store_true", help="Replace verified snapshots under data/."
     )
     parser.add_argument(
-        "--raw-dir", type=Path, help="OpenML download cache; defaults to .local-data/ho09/raw/."
+        "--raw-dir",
+        type=Path,
+        help="OpenML download cache; defaults to .local-data/ho09/raw/.",
     )
     parser.add_argument(
         "--refresh",
@@ -67,10 +74,14 @@ def main(argv=None):
         help="Re-download frozen OpenML sources instead of reusing verified bytes.",
     )
     args = parser.parse_args(argv)
-    datasets = list(DATASETS) if "all" in args.dataset else list(dict.fromkeys(args.dataset))
+    datasets = (
+        list(DATASETS) if "all" in args.dataset else list(dict.fromkeys(args.dataset))
+    )
     if (args.refresh or args.raw_dir) and "meta-learning" not in datasets:
         parser.error("--refresh and --raw-dir apply to the meta-learning dataset")
-    output = (ROOT / "data" if args.publish else args.output_dir or ROOT / ".local-data").resolve()
+    output = (
+        ROOT / "data" if args.publish else args.output_dir or ROOT / ".local-data"
+    ).resolve()
     supplied = (ROOT / "data").resolve()
     if not args.publish and (
         output == supplied or supplied in output.parents or output in supplied.parents

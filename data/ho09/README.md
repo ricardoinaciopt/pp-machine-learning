@@ -1,4 +1,4 @@
-# HO9: a frozen teaching collection for basic meta-learning
+# HO9: a teaching collection for basic meta-learning
 
 | OpenML ID (version 1)                 | Dataset                          | Rows | Predictors | Classes | Teaching role                                  |
 | ------------------------------------- | -------------------------------- | ---: | ---------: | ------: | ---------------------------------------------- |

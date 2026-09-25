@@ -52,9 +52,11 @@ class NotebookContractTests(unittest.TestCase):
             )
 
     def test_local_setup_never_installs(self):
-        with patch.object(setup.importlib.util, "find_spec", return_value=None), patch.object(
-            setup, "in_colab", return_value=False
-        ), patch.object(setup.subprocess, "run") as install:
+        with (
+            patch.object(setup.importlib.util, "find_spec", return_value=None),
+            patch.object(setup, "in_colab", return_value=False),
+            patch.object(setup.subprocess, "run") as install,
+        ):
             with self.assertRaisesRegex(RuntimeError, "Course packages are missing"):
                 setup.setup_notebook()
             install.assert_not_called()
@@ -62,14 +64,19 @@ class NotebookContractTests(unittest.TestCase):
     def test_colab_installs_only_missing_dependencies(self):
         fake = types.ModuleType("google.colab")
         fake.output = types.SimpleNamespace(enable_custom_widget_manager=lambda: None)
-        with patch.object(
-            setup.importlib.util,
-            "find_spec",
-            side_effect=lambda name: None if name == "ipywidgets" else object(),
-        ), patch.object(setup, "in_colab", return_value=True), patch.object(
-            setup.subprocess, "run", return_value=types.SimpleNamespace(returncode=0)
-        ) as install, patch.dict(
-            sys.modules, {"google.colab": fake}
+        with (
+            patch.object(
+                setup.importlib.util,
+                "find_spec",
+                side_effect=lambda name: None if name == "ipywidgets" else object(),
+            ),
+            patch.object(setup, "in_colab", return_value=True),
+            patch.object(
+                setup.subprocess,
+                "run",
+                return_value=types.SimpleNamespace(returncode=0),
+            ) as install,
+            patch.dict(sys.modules, {"google.colab": fake}),
         ):
             setup.setup_notebook()
             command = install.call_args.args[0]
@@ -78,10 +85,11 @@ class NotebookContractTests(unittest.TestCase):
     def test_colab_complete_environment_does_not_install(self):
         fake = types.ModuleType("google.colab")
         fake.output = types.SimpleNamespace(enable_custom_widget_manager=lambda: None)
-        with patch.object(setup.importlib.util, "find_spec", return_value=object()), patch.object(
-            setup, "in_colab", return_value=True
-        ), patch.object(setup.subprocess, "run") as install, patch.dict(
-            sys.modules, {"google.colab": fake}
+        with (
+            patch.object(setup.importlib.util, "find_spec", return_value=object()),
+            patch.object(setup, "in_colab", return_value=True),
+            patch.object(setup.subprocess, "run") as install,
+            patch.dict(sys.modules, {"google.colab": fake}),
         ):
             setup.setup_notebook()
             install.assert_not_called()
@@ -108,10 +116,15 @@ class InteractiveSemanticsTests(unittest.TestCase):
         from IPython.utils.capture import capture_output
         import matplotlib.pyplot as plt
 
-        with capture_output(), patch.object(plt, "show", side_effect=lambda: plt.close("all")):
+        with (
+            capture_output(),
+            patch.object(plt, "show", side_effect=lambda: plt.close("all")),
+        ):
             lab = interactive_threshold(*split_classification(*make_imbalance_data()))
             with patch.object(
-                LogisticRegression, "fit", side_effect=AssertionError("threshold refitted model")
+                LogisticRegression,
+                "fit",
+                side_effect=AssertionError("threshold refitted model"),
             ):
                 high = lab.render(threshold=0.5, class_weight=None).iloc[0]
                 low = lab.render(threshold=0.2, class_weight=None).iloc[0]
@@ -125,8 +138,13 @@ class InteractiveSemanticsTests(unittest.TestCase):
         import matplotlib.pyplot as plt
 
         data = load_course_data("ds2")
-        with capture_output(), patch.object(plt, "show", side_effect=lambda: plt.close("all")):
-            lab = interactive_svm(*split_classification(data.iloc[:, :2], data.iloc[:, -1]))
+        with (
+            capture_output(),
+            patch.object(plt, "show", side_effect=lambda: plt.close("all")),
+        ):
+            lab = interactive_svm(
+                *split_classification(data.iloc[:, :2], data.iloc[:, -1])
+            )
             lab.controls["kernel"].value = "linear"
             self.assertTrue(lab.controls["gamma"].disabled)
             self.assertTrue(lab.controls["degree"].disabled)
@@ -142,13 +160,16 @@ class InteractiveSemanticsTests(unittest.TestCase):
         matplotlib.use("Agg")
         from matplotlib import pyplot as plt
 
-        X = pd.DataFrame({"cement": np.linspace(100, 500, 30), "age": np.tile([7, 28, 90], 10)})
+        X = pd.DataFrame(
+            {"cement": np.linspace(100, 500, 30), "age": np.tile([7, 28, 90], 10)}
+        )
         y = pd.Series(np.linspace(10, 70, 30))
         for depth, leaf in [(1, 1), (6, 10)]:
             fig = plot_concrete_surfaces(X, y, depth, leaf)
             self.assertEqual(len(fig.axes), 3)
             self.assertEqual(
-                fig.axes[0].collections[0].get_clim(), fig.axes[1].collections[0].get_clim()
+                fig.axes[0].collections[0].get_clim(),
+                fig.axes[1].collections[0].get_clim(),
             )
             plt.close(fig)
 
@@ -189,7 +210,8 @@ class ExecutionWorkflowTests(unittest.TestCase):
             source.parent.mkdir(parents=True)
             source.write_text("![Plot](missing.png)")
             self.assertEqual(
-                validate_media(root), ["hands-on/ho02/handout.qmd: missing image missing.png"]
+                validate_media(root),
+                ["hands-on/ho02/handout.qmd: missing image missing.png"],
             )
 
 
@@ -199,43 +221,63 @@ class MaintenanceWorkflowTests(unittest.TestCase):
         import subprocess
         import contextlib
         import io
-        with patch.object(build.shutil, 'which', return_value='/quarto'), patch.object(
-            build.subprocess, 'run', side_effect=subprocess.CalledProcessError(1, 'validation')
-        ) as run, contextlib.redirect_stderr(io.StringIO()):
+
+        with (
+            patch.object(build.shutil, "which", return_value="/quarto"),
+            patch.object(
+                build.subprocess,
+                "run",
+                side_effect=subprocess.CalledProcessError(1, "validation"),
+            ) as run,
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
             with self.assertRaises(SystemExit) as error:
                 build.main([])
             self.assertEqual(error.exception.code, 1)
             self.assertEqual(run.call_count, 1)
-            self.assertTrue(run.call_args.args[0][1].endswith('validate_materials.py'))
+            self.assertTrue(run.call_args.args[0][1].endswith("validate_materials.py"))
 
     def test_full_build_checks_before_rendering(self):
         import build_materials as build
-        with patch.object(build.shutil, 'which', return_value='/quarto'), patch.object(
-            build.subprocess, 'run'
-        ) as run:
-            build.main(['--full'])
-            self.assertEqual(run.call_args_list[0].args[0][-1], '--full')
-            self.assertEqual(run.call_args_list[1].args[0], ['/quarto', 'render', '--to', 'all'])
-            self.assertTrue(all(call.kwargs['check'] for call in run.call_args_list))
+
+        with (
+            patch.object(build.shutil, "which", return_value="/quarto"),
+            patch.object(build.subprocess, "run") as run,
+        ):
+            build.main(["--full"])
+            self.assertEqual(run.call_args_list[0].args[0][-1], "--full")
+            self.assertEqual(
+                run.call_args_list[1].args[0], ["/quarto", "render", "--to", "all"]
+            )
+            self.assertTrue(all(call.kwargs["check"] for call in run.call_args_list))
 
     def test_failed_test_suite_prevents_notebook_execution(self):
         import validate_materials as validation
         import subprocess
         import contextlib
         import io
-        with patch.object(validation, 'validate', return_value=[]), patch.object(
-            validation.subprocess, 'run', side_effect=subprocess.CalledProcessError(1, 'tests')
-        ) as run, contextlib.redirect_stderr(io.StringIO()):
+
+        with (
+            patch.object(validation, "validate", return_value=[]),
+            patch.object(
+                validation.subprocess,
+                "run",
+                side_effect=subprocess.CalledProcessError(1, "tests"),
+            ) as run,
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
             with self.assertRaises(SystemExit):
-                validation.main(['--full'])
+                validation.main(["--full"])
             self.assertEqual(run.call_count, 1)
-            self.assertIn('unittest', run.call_args.args[0])
+            self.assertIn("unittest", run.call_args.args[0])
 
     def test_quick_validation_does_not_execute_notebooks(self):
         import validate_materials as validation
-        with patch.object(validation, 'validate', return_value=[]), patch.object(
-            validation.subprocess, 'run'
-        ) as run:
+
+        with (
+            patch.object(validation, "validate", return_value=[]),
+            patch.object(validation.subprocess, "run") as run,
+        ):
             validation.main([])
             run.assert_not_called()
 
