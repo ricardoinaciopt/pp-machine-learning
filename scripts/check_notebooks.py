@@ -31,6 +31,27 @@ google.colab = colab
 """
 
 
+def runtime_warning_cells(book):
+    """Return zero-based cell indexes whose saved output contains a RuntimeWarning."""
+    cells = []
+    for index, cell in enumerate(book.cells):
+        for result in cell.get("outputs", []):
+            values = [
+                result.get("text", ""),
+                result.get("ename", ""),
+                result.get("evalue", ""),
+                result.get("traceback", []),
+            ]
+            text = "\n".join(
+                value if isinstance(value, str) else "\n".join(value)
+                for value in values
+            )
+            if "RuntimeWarning" in text:
+                cells.append(index)
+                break
+    return cells
+
+
 def run(path, output, simulate_colab=False, save_solutions=False):
     book = nbformat.read(path, as_version=4)
     book.cells.insert(
@@ -50,6 +71,10 @@ def run(path, output, simulate_colab=False, save_solutions=False):
                         f"Widget callback failed in {path}: {result.get('evalue')}"
                     )
     book.cells.pop(0)
+    warning_cells = runtime_warning_cells(book)
+    if warning_cells:
+        locations = ", ".join(str(index) for index in warning_cells)
+        raise RuntimeError(f"RuntimeWarning emitted in cell(s) {locations}")
     relative = path.relative_to(ROOT)
     destination = output / relative
     destination.parent.mkdir(parents=True, exist_ok=True)

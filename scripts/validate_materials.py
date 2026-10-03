@@ -17,6 +17,8 @@ import nbformat
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from mlcourse.provenance import IMPLEMENTATION_HASH_KIND, implementation_sha256
+
 
 def require(condition, message):
     if not condition:
@@ -209,9 +211,17 @@ def validate_meta_dataset(root=ROOT):
     for field, path in [
         ("manifest_sha256", folder / "openml_datasets.csv"),
         ("meta_dataset_sha256", folder / "meta_dataset.csv"),
-        ("implementation_sha256", Path(root) / "src/mlcourse/metalearning.py"),
     ]:
         require(provenance[field] == digest(path), f"Cache hash mismatch: {field}")
+    require(
+        provenance.get("implementation_hash_kind") == IMPLEMENTATION_HASH_KIND,
+        "Unsupported implementation hash kind",
+    )
+    require(
+        provenance["implementation_sha256"]
+        == implementation_sha256(Path(root) / "src/mlcourse/metalearning.py"),
+        "Cache hash mismatch: implementation_sha256",
+    )
     for entry, row in zip(manifest, rows):
         require(
             len(entry["sha256"]) == 64 and entry["reason_for_inclusion"],

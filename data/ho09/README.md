@@ -17,6 +17,8 @@
 
 `openml_datasets.csv`: ordered IDs, names, versions, exact targets, dimensions, source URLs, SHA-256 digests of the downloaded Parquet bytes, the licence label reported by OpenML, and a per-dataset rationale. ID-based versioning follows the [OpenML dataset documentation](https://docs.openml.org/examples/20_basic/simple_datasets_tutorial/). Consult the linked records and original sources for citation and reuse terms.
 
+`meta_dataset.provenance.json` records the inputs and implementation used to build the supplied cache. The implementation digest hashes the normalized Python syntax that contributes to dataset generation, so formatting, comments, docstrings, and unrelated analysis helpers do not invalidate the cache.
+
 ## Data dictionary
 
 `Dataset`, `OpenMLID`, and `Source` identify each problem. `NInstances`, `NTrain`, and `NTest` describe raw and partition sizes; `TrainIndexSHA256` and `TestIndexSHA256` identify the split. `CorrectDT` and `CorrectDS` are test correct counts. `AccuracyDT`, `AccuracyDS`, `BalancedAccuracyDT`, `BalancedAccuracyDS`, `AccuracyMajority`, `AccuracyGap_DT_minus_DS`, `Best`, `BestModel`, and `BestModelBinary` are outcomes.

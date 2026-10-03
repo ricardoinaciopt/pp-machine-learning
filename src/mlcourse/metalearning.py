@@ -19,6 +19,8 @@ from sklearn.model_selection import train_test_split, LeaveOneOut, cross_val_pre
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix
 from sklearn.dummy import DummyClassifier
 
+from .provenance import IMPLEMENTATION_HASH_KIND, implementation_sha256
+
 RANDOM_STATE = 42
 PROTOCOL = {
     "version": 1,
@@ -264,7 +266,8 @@ def rebuild_meta_dataset(root=ROOT, raw_dir=None, output_dir=None, refresh=False
     provenance = {
         "protocol": PROTOCOL,
         "manifest_sha256": sha256(root / "data/ho09/openml_datasets.csv"),
-        "implementation_sha256": sha256(Path(__file__)),
+        "implementation_hash_kind": IMPLEMENTATION_HASH_KIND,
+        "implementation_sha256": implementation_sha256(Path(__file__)),
         "meta_dataset_sha256": hashlib.sha256(csv_bytes).hexdigest(),
         "python": platform.python_version(),
         "packages": {
@@ -293,11 +296,14 @@ def load_meta_dataset(root=ROOT):
         checks = {
             "manifest_sha256": folder / "openml_datasets.csv",
             "meta_dataset_sha256": folder / "meta_dataset.csv",
-            "implementation_sha256": Path(__file__),
         }
         for key, path in checks.items():
             if provenance[key] != sha256(path):
                 raise ValueError(f"HO9 cache is stale or corrupt: {key}")
+        if provenance.get("implementation_hash_kind") != IMPLEMENTATION_HASH_KIND:
+            raise ValueError("HO9 cache uses an unsupported implementation hash")
+        if provenance["implementation_sha256"] != implementation_sha256(Path(__file__)):
+            raise ValueError("HO9 cache is stale or corrupt: implementation_sha256")
         if provenance["protocol"] != PROTOCOL:
             raise ValueError("HO9 cache protocol differs")
         table = pd.read_csv(folder / "meta_dataset.csv")

@@ -175,6 +175,37 @@ class InteractiveSemanticsTests(unittest.TestCase):
 
 
 class ExecutionWorkflowTests(unittest.TestCase):
+    def test_canonical_notebooks_store_no_runtime_warnings(self):
+        import nbformat
+        from check_notebooks import runtime_warning_cells, select_notebooks
+
+        failures = {}
+        for path in select_notebooks():
+            cells = runtime_warning_cells(nbformat.read(path, as_version=4))
+            if cells:
+                failures[str(path.relative_to(ROOT))] = cells
+        self.assertEqual(failures, {})
+
+    def test_runtime_warning_output_is_detected(self):
+        import nbformat
+        from check_notebooks import runtime_warning_cells
+
+        book = nbformat.v4.new_notebook(
+            cells=[
+                nbformat.v4.new_code_cell(
+                    outputs=[
+                        nbformat.v4.new_output(
+                            "stream",
+                            name="stderr",
+                            text="example.py:1: RuntimeWarning: invalid value\n",
+                        )
+                    ]
+                ),
+                nbformat.v4.new_code_cell(outputs=[]),
+            ]
+        )
+        self.assertEqual(runtime_warning_cells(book), [0])
+
     def test_select_all_pair_and_single(self):
         from check_notebooks import select_notebooks
 

@@ -1,5 +1,5 @@
 # Shared course environment: reference CPython 3.13.5.
-numpy==2.1.3
+numpy==2.4.6
 pandas==2.2.3
 scipy==1.15.3
 scikit-learn==1.6.1

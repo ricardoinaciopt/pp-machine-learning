@@ -1,6 +1,12 @@
-# A Pedagogical Publication for Lecturing Machine Learning Courses
+# Predict-Observe-Explain: Hands-On Exercises and Interactive Learning Materials for Machine Learning Courses
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23122437.svg)](https://doi.org/10.5281/zenodo.23122437)
 
 Hands-on materials for an undergraduate machine-learning course, combining written exercises with Python experiments. The activities develop an understanding of how models learn, how their assumptions shape predictions, and how to interpret their performance.
+
+## Teaching guide
+
+The instructor guide explains how to organise and deliver the materials: [PDF](docs/TEACHING_GUIDE.pdf).
 
 ## Hands-On contents
 
@@ -56,6 +62,7 @@ The data used by the notebooks are included in [data/](data/).
 │   │   └── solutions/         Matching notebooks and handouts
 │   └── ho10/                  Handout and worked solution only
 ├── data/                      Supplied datasets and attribution
+├── docs/                      Teaching guide (PDF)
 ├── src/mlcourse/              Shared notebook tools
 ├── templates/                 PDF and Word publishing styles
 ├── scripts/
@@ -146,7 +153,9 @@ Outputs stay beside their QMD source: for example, `hands-on/hoXX/handout.qmd` p
 
 If you use these materials in teaching, research, or related work, please cite:
 
-> Inácio, R., Ribeiro, R. P., Santos, M., & Soares, C. (2026). *A Pedagogical Publication for Lecturing Machine Learning Courses*. GitHub repository. [https://github.com/ricardoinaciopt/pp-machine-learning](https://github.com/ricardoinaciopt/pp-machine-learning)
+> Inácio, R., Ribeiro, R. P., Santos, M., & Soares, C. (2026). *Predict-Observe-Explain: Hands-On Exercises and Interactive Learning Materials for Machine Learning Courses*. GitHub repository. [https://github.com/ricardoinaciopt/pp-machine-learning](https://github.com/ricardoinaciopt/pp-machine-learning)
+
+The DOI resolves to the latest archived release on Zenodo: [10.5281/zenodo.23122437](https://doi.org/10.5281/zenodo.23122437).
 
 ## **Authors:**
 

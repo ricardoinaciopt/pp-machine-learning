@@ -85,6 +85,53 @@ class DatasetIntegrityTests(unittest.TestCase):
 
 class MetaDatasetTests(unittest.TestCase):
 
+    def test_implementation_hash_tracks_semantics_not_formatting(self):
+        first = '''
+VALUE = 2
+
+def helper(value):
+    """Original documentation."""
+    return value + VALUE
+
+def rebuild_meta_dataset():
+    return helper(3)
+
+def unrelated():
+    return "first"
+'''
+        formatted = '''
+VALUE=2
+
+def helper(value):
+    """Reworded documentation."""
+    # Formatting and comments do not affect generated values.
+    return (value+VALUE)
+
+def rebuild_meta_dataset(): return helper(3)
+
+def unrelated():
+    return "changed"
+'''
+        changed = first.replace("value + VALUE", "value * VALUE")
+        imported = first.replace(
+            "VALUE = 2", "from operator import add\n\nVALUE = 2"
+        ).replace("value + VALUE", "add(value, VALUE)")
+        redirected_import = imported.replace(
+            "from operator import add", "from operator import mul as add"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "generator.py"
+            path.write_text(first)
+            original_hash = ml.implementation_sha256(path)
+            path.write_text(formatted)
+            self.assertEqual(ml.implementation_sha256(path), original_hash)
+            path.write_text(changed)
+            self.assertNotEqual(ml.implementation_sha256(path), original_hash)
+            path.write_text(imported)
+            imported_hash = ml.implementation_sha256(path)
+            path.write_text(redirected_import)
+            self.assertNotEqual(ml.implementation_sha256(path), imported_hash)
+
     def test_default_is_offline_and_ordered(self):
         with patch(
             "urllib.request.urlopen", side_effect=AssertionError("network forbidden")

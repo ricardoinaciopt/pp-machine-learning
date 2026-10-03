@@ -1,5 +1,6 @@
 {
-  "implementation_sha256": "b5e6ef115ad59017ef6e04784fdc5b041e68301f7f50b20b60200a555d1ae8ab",
+  "implementation_hash_kind": "python-ast-v1",
+  "implementation_sha256": "87d97781055568233f5bea12b6ae4cce89db80d403c91d3949e43e674b61018e",
   "manifest_sha256": "fabf86eb678cf894d8bce5a74582241ab575b00545861a8e8966dd54c05e942d",
   "meta_dataset_sha256": "aeb2bc70d9c19cf6be9399efa9e00dbf6d00ba576ac919faa0c43ad7ad906626",
   "packages": {
