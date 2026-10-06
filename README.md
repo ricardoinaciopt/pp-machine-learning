@@ -153,13 +153,13 @@ Outputs stay beside their QMD source: for example, `hands-on/hoXX/handout.qmd` p
 
 If you use these materials in teaching, research, or related work, please cite:
 
-> Inácio, R., Ribeiro, R. P., Santos, M., & Soares, C. (2026). *Predict-Observe-Explain: Hands-On Exercises and Interactive Learning Materials for Machine Learning Courses*. GitHub repository. [https://github.com/ricardoinaciopt/pp-machine-learning](https://github.com/ricardoinaciopt/pp-machine-learning)
+> Inácio, Ricardo; Ribeiro, Rita P.; Santos, Moisés; Soares, Carlos. (2026). *Predict-Observe-Explain: Hands-On Exercises and Interactive Learning Materials for Machine Learning Courses*. GitHub repository. [https://github.com/ricardoinaciopt/pp-machine-learning](https://github.com/ricardoinaciopt/pp-machine-learning)
 
 The DOI resolves to the latest archived release on Zenodo: [10.5281/zenodo.23122437](https://doi.org/10.5281/zenodo.23122437).
 
 ## **Authors:**
 
 - Ricardo Inácio: [Ciência Vitae](https://www.cienciavitae.pt//pt/E21B-630F-8093)
-- Rita Ribeiro: [Ciência Vitae](https://www.cienciavitae.pt/5512-9B50-1CAB)
+- Ribeiro, Rita P.: [Ciência Vitae](https://www.cienciavitae.pt/5512-9B50-1CAB)
 - Moisés Santos: [Ciência Vitae](https://www.cienciavitae.pt/5915-C53F-AFA3)
 - Carlos Soares: [Ciência Vitae](https://www.cienciavitae.pt//B114-1EE5-E938)

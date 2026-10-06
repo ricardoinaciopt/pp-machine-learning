@@ -1,0 +1,27 @@
+{
+  "title": "Predict-Observe-Explain: Hands-On Exercises and Interactive Learning Materials for Machine Learning Courses",
+  "creators": [
+    {
+      "name": "Inácio, Ricardo"
+    },
+    {
+      "name": "Ribeiro, Rita P."
+    },
+    {
+      "name": "Santos, Moisés"
+    },
+    {
+      "name": "Soares, Carlos"
+    }
+  ],
+  "description": "Hands-on materials for an undergraduate machine-learning course, combining written exercises with Python experiments. Teaching content is licensed under CC BY 4.0 and code under the MIT License.",
+  "access_right": "open",
+  "upload_type": "software",
+  "language": "eng",
+  "keywords": [
+    "machine learning education",
+    "hands-on exercises",
+    "interactive learning",
+    "predict-observe-explain"
+  ]
+}
